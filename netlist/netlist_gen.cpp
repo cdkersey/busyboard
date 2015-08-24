@@ -27,8 +27,8 @@ void Reg597(node &q7,
 	    node ds, bvec<8> d, node st_cp, node sh_cp, node npl, node nmr)
 {
   // Pins (DIP): VDD=16, GND=8,
-  // 15, 1, 2, 3, 4, 5, 6, 7, 12, 11, 13, 10,
-  // 14
+  // 14, 15, 1, 2, 3, 4, 5, 6, 7, 12, 11, 13, 10,
+  // 9
   Module("74hc597")
     .inputs(ds)(d)(st_cp)(sh_cp)(npl)(nmr)
     .outputs(q7)

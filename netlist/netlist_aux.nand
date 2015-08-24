@@ -1,0 +1,21 @@
+module<usb_b> vdd_in nc1 nc2 gnd
+module<r10ohm> vdd_in vdd
+module<led> vdd_in r_pwrled
+module<r1600ohm> r_pwrled gnd
+module<c1uF> vdd gnd
+module<c1uF> vdd gnd
+module<c1uF> vdd gnd
+module<c1uF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd

@@ -8,7 +8,11 @@ BusyBoard - PC-connected digital electronics swiss army knife
   - Parallel port cable
   - USB to parallel port cable (for fun)
 - Finalize netlist using CHDL, etc.
-- Design PCB in kicad
+  . Get basic desgin encoded
+  . Get auxiliary design set up.
+  _ Get simulation/validation working.
+  _ Get conversion to kicad format working.
+- Design PCB in kicad (with LVS(LVN really) in mind)
 - Order PCB from http://rushpcb.com/offers/SpecialNewCustomer.aspx
 
 BOM

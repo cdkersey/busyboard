@@ -86,23 +86,26 @@ private:
 // that they can be output to appropriate gerber files.
 class drawable {
 public:
-  drawable(int pri=0): pri(pri) { drawables.insert(make_pair(pri, this)); }
-  virtual ~drawable() { drawables.erase(make_pair(pri, this)); }
+  drawable() { drawables.insert(this); }
+  virtual ~drawable() { drawables.erase(this); }
 
-  virtual void draw(layer l, gerber &g) = 0;
+  virtual void draw(int pri, layer l, gerber &g) = 0;
 
   static void draw_layer(layer l, gerber &g);
   
 private:
-  int pri;
-  static set<pair<int, drawable *> > drawables;
+  static set<drawable *> drawables;
+  static set<int> priorities;
+
+protected:
+  static void add_priority(int pri);
 };
 
 class component : public drawable {
 public:
-  component(): drawable(100) /* For pads */ {}
+  component() {}
 
-  virtual void draw(layer l, gerber &g) = 0;
+  virtual void draw(int pri, layer l, gerber &g) = 0;
 };
 
 // Linear (as in non-branching, not necessarily straight) circuit trace.
@@ -110,15 +113,16 @@ class track : public drawable {
 public:
   track(int layer_idx, double thickness, double clearance):
     layer_idx(layer_idx), thickness(thickness), clearance(clearance)
-  {}
+  { add_priority(-50); add_priority(0); }
 
   track(int layer_idx, double thickness):
     layer_idx(layer_idx), thickness(thickness), clearance(thickness*1.25)
-  {}
+  { add_priority(-50); add_priority(0); }
 
   track &add_point(point pt) { points.push_back(pt); return *this; }
+  track &add_point(double x, double y) { return add_point(point(x, y)); }
   
-  void draw(layer l, gerber &g);
+  void draw(int pri, layer l, gerber &g);
   
 private:
   int layer_idx;
@@ -130,26 +134,29 @@ private:
 class via : public drawable {
 public:
   via(point center, double outer, double inner):
-    center(center), outer(outer), inner(inner), clearance(outer*1.25),
-    drawable(100)
-  {}
+    center(center), outer(outer), inner(inner), clearance(outer*1.25)
+  { add_priority(-50); add_priority(0); }
 
   via(point center, double outer, double inner, double clearance):
-    center(center), outer(outer), inner(inner), clearance(clearance),
-    drawable(100)
-  {}
+    center(center), outer(outer), inner(inner), clearance(clearance)
+  { add_priority(-50); add_priority(0); }
   
-  void draw(layer l, gerber &g);
+  void draw(int pri, layer l, gerber &g);
   
 private:
   double clearance, outer, inner;
   point center;
 };
 
-set<pair<int, drawable * > > drawable::drawables;
+set<drawable*> drawable::drawables;
+set<int> drawable::priorities;
+
+void drawable::add_priority(int pri) { priorities.insert(pri); }
 
 void drawable::draw_layer(layer l, gerber &g) {
-  for (auto &p : drawables) p.second->draw(l, g);
+  for (auto pri : priorities)
+    for (auto &p : drawables)
+      p->draw(pri, l, g);
 }
 
 // Set the current aperature (only circular supported)
@@ -274,34 +281,41 @@ void err(errcode e) {
   abort();
 }
 
-void track::draw(layer l, gerber &g) {
+void track::draw(int pri, layer l, gerber &g) {
   if (l == LAYER_CU0 + layer_idx) {
-    g.set_clear();
-    g.set_aperture(clearance);
-    g.move(points[0]);
-    for (unsigned i = 1; i < points.size(); ++i)
-      g.draw(points[i]);
-
-    g.set_dark();
-    g.set_aperture(thickness);
-    g.move(points[0]);
-    for (unsigned i = 1; i < points.size(); ++i)
-      g.draw(points[i]);
+    if (pri == -50) {
+      g.set_clear();
+      g.set_aperture(clearance);
+      g.move(points[0]);
+      for (unsigned i = 1; i < points.size(); ++i)
+        g.draw(points[i]);
+    } else if (pri == 0) {
+      g.set_dark();
+      g.set_aperture(thickness);
+      g.move(points[0]);
+      for (unsigned i = 1; i < points.size(); ++i)
+        g.draw(points[i]);
+    }
   }
 }
 
-void via::draw(layer l, gerber &g) {
+void via::draw(int pri, layer l, gerber &g) {
   if (l >= LAYER_CU0 && l <= LAYER_CU0 + N_CU) {
-    g.set_clear();
-    g.set_aperture(clearance);
-    g.flash(center);
-    g.set_dark();
-    g.set_aperture(outer);
-    g.flash(center);
+    if (pri == -50) {
+      g.set_clear();
+      g.set_aperture(clearance);
+      g.flash(center);
+    } else if (pri == 0) {
+      g.set_dark();
+      g.set_aperture(outer);
+      g.flash(center);
+    }
   } else if (l == LAYER_PTH) {
-    g.set_dark();
-    g.set_aperture(inner);
-    g.flash(center);
+    if (pri == 0) {
+      g.set_dark();
+      g.set_aperture(inner);
+      g.flash(center);
+    }
   }
 }
 
@@ -311,14 +325,14 @@ int main() {
 
   for (unsigned i = 0; i < 8; ++i) {
     track *t = new track(0, 1.0/20.0);
-    t->add_point(point(0.1*i, 0.15)).add_point(point(0.1*i, 1.0));
+    t->add_point(0.1*i, 0.15).add_point(0.1*i, 1.0);
 
     via *v = new via(point(0.1*i, 1.0), 0.08, 0.035);
   }
 
   for (unsigned i = 0; i < 8; ++i) {
     track *t = new track(0, 1.0/20.0);
-    t->add_point(point(0.1*i, -0.15)).add_point(point(0.1*i, -1.0));
+    t->add_point(0.1*i, -0.15).add_point(0.1*i, -1.0);
 
     via *v = new via(point(0.1*i, -1.0), 0.08, 0.035);
   }

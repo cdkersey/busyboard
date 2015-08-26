@@ -17,7 +17,7 @@ x Design PCB in kicad (with LVS(LVN really) in mind)
 - Design PCB in C++
   - Get CAD environment set up.
     . Tracks
-    _ A proper way to prioritize drawables to get proper clearance.
+    . A proper way to prioritize drawables to get proper clearance.
     _ Vias
     _ Planes
     _ Components/pads

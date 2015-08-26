@@ -12,8 +12,23 @@ BusyBoard - PC-connected digital electronics swiss army knife
   . Get auxiliary design set up.
   _ Get simulation/validation working.
   _ Get conversion to kicad format working.
-- Design PCB in kicad (with LVS(LVN really) in mind)
+x Design PCB in kicad (with LVS(LVN really) in mind)
+  - Nevermind, kicad is filth.
+- Design PCB in C++
+  - Get CAD environment set up.
+    . Tracks
+    _ A proper way to prioritize drawables to get proper clearance.
+    _ Vias
+    _ Planes
+    _ Components/pads
+    _ Scalable Text (part numbers, etc)
+  - Draw PCB
+    - Proper DIP component
+    - Breadboard "component" with 0 pins
+    - USB connector component
+    - Centronics connector component
 - Order PCB from http://rushpcb.com/offers/SpecialNewCustomer.aspx
+- Write host software
 
 BOM
 1x ED2982-ND "CONN USB TYPE B R/A WHITE"

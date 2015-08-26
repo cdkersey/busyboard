@@ -7,3 +7,18 @@ pieces of them, sure, but when it comes to actually representing designs in
 human-and-machine-readable fashion, I find schematics to be intrinsically
 inferior to easily-customizable textual representations.
 
+Nixing KiCad
+------------
+
+I was very excited to start laying out my PCB in KiCad, a widely-used open
+source EDA platform and PCB editor. Since I was already had netlists in a
+reasonable format, I assumed it would be no problem to use along with KiCad's
+LVS (layout-versus-schematic) capability. After all, the electronics industry
+is notorious for terse, easily-parsable and easily-generable file formats. What
+I found instead was a workflow so set in stone that it seemed the idea of using
+an external source of netlists had never even occurred to the original
+developers.
+
+As is clear from CHDL itself, what I do in these situations is create another,
+lighter-weight tool.
+

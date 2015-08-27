@@ -18,10 +18,13 @@ x Design PCB in kicad (with LVS(LVN really) in mind)
   - Get CAD environment set up.
     . Tracks
     . A proper way to prioritize drawables to get proper clearance.
-    _ Vias
+    . Vias
+    _ Components
+      . Pads
     _ Planes
-    _ Components/pads
     _ Scalable Text (part numbers, etc)
+      . Rendering engine
+      _ Font
   - Draw PCB
     - Proper DIP component
     - Breadboard "component" with 0 pins

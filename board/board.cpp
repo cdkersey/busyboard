@@ -36,8 +36,11 @@ struct point {
   
   double x, y;
 
-  bool operator==(point &r) { return r.x == x && r.y == y; }
-  bool operator!=(point &r) { return r.x != x || r.y != y; }
+  bool operator==(const point &r) const { return r.x == x && r.y == y; }
+  bool operator!=(const point &r) const { return r.x != x || r.y != y; }
+  point operator+(const point &r) const { return point(x + r.x, y + r.y); }
+
+  point scale(double r) const { return point(r*x, r*y); }
 };
 
 // The gerber file writer; the graphical output API.
@@ -99,6 +102,32 @@ private:
 
 protected:
   static void add_priority(int pri);
+};
+
+class font {
+public:
+  font(string filename) { ifstream in(filename); load(in); }
+  point draw_char(gerber &g, char c, point p, double scale) const;
+  
+private:
+  void load(istream &in);
+
+  map<char, vector<point> > f;
+};
+
+class text : public drawable {
+public:
+  text(const font &f, int layer, point pos, string str, double scale):
+    f(f), l(layer), p(pos), str(str), scale(scale) { add_priority(-100); }
+
+  void draw(int pri, layer l, gerber &g);
+  
+private:
+  int l;
+  string str;
+  const font &f;
+  double scale;
+  point p;
 };
 
 class component : public drawable {
@@ -319,6 +348,48 @@ void via::draw(int pri, layer l, gerber &g) {
   }
 }
 
+point font::draw_char(gerber &g, char c, point p, double scale) const {
+  if (c == ' ') return point(p.x + 3*scale, p.y);
+  if (!f.count(c)) return p;
+  
+  const vector<point> &v(f.find(c)->second);
+
+  double width = 0;
+  g.set_dark();
+  g.set_aperture(scale/5.0);
+  for (unsigned i = 0; i < v.size(); i += 2) {
+    g.draw(p + v[i].scale(scale), p + v[i+1].scale(scale));
+    if (v[i].x > width) width = v[i].x;
+    if (v[i + 1].x > width) width = v[i + 1].x;
+  }
+
+  p.x += width*scale + scale * 1.3;
+
+  return p;
+}
+  
+void font::load(istream &in) {
+  while (!!in) {
+    char c;
+    in >> c;
+    if (!in) break;
+    while (in.peek() != '\n') {
+      double x, y;
+      in >> x >> y;
+      f[c].push_back(point(x, y));
+    }
+  }
+}
+
+void text::draw(int pri, layer lx, gerber &g) {
+  if (pri == -100 && l == lx) {
+    point pos;
+    unsigned i;
+    for (i = 0, pos = p; i < str.length(); i++)
+      pos = f.draw_char(g, str[i], pos, scale);
+  }
+}
+
 int main() {
   ofstream gfile("dump.grb");
   gerber g(gfile);
@@ -336,6 +407,10 @@ int main() {
 
     via *v = new via(point(0.1*i, -1.0), 0.08, 0.035);
   }
+
+  font f("FONT");
+  new text(f, LAYER_CU0, point(0, -1.5), "A10a20a30", 1.0/16);
+  new text(f, LAYER_CU0, point(0, 1.5), "1 2 3", 1.0/8);
   
   drawable::draw_layer(LAYER_CU0, g);
   

@@ -431,7 +431,7 @@ int main() {
   
   font f("FONT");
   new text(f, LAYER_CU0, point(0, -1.5), "Aa0", 1.0/16);
-  new text(f, LAYER_SILKSCREEN, point(0, 1.5), "1 2 3", 1.0/8);
+  new text(f, LAYER_SILKSCREEN, point(0, 1.5), "1 2 3 Bb", 1.0/8);
 
   {
     ofstream gfile("dump.cu0.grb");

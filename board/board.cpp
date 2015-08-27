@@ -25,7 +25,7 @@ const unsigned N_CU(4); // Number of total copper layers in layer enum.
 
 enum layer {
   LAYER_SILKSCREEN,                               // Screen
-  LAYER_MASK,                                     // Solder mask (inverted)
+  LAYER_MASK0, LAYER_MASK1,                       // Solder mask (inverted)
   LAYER_CU0, LAYER_CU1, LAYER_CU2, LAYER_CU3,     // Copper
   LAYER_PTH, LAYER_NPTH                           // Thru-holes (plated/non)
 };
@@ -118,7 +118,7 @@ private:
 class text : public drawable {
 public:
   text(const font &f, int layer, point pos, string str, double scale):
-    f(f), l(layer), p(pos), str(str), scale(scale) { add_priority(-100); }
+    f(f), l(layer), p(pos), str(str), scale(scale) { add_priority(100); }
 
   void draw(int pri, layer l, gerber &g);
   
@@ -170,12 +170,24 @@ public:
     center(center), outer(outer), inner(inner), clearance(clearance)
   { add_priority(-50); add_priority(0); }
   
-  void draw(int pri, layer l, gerber &g);
+  virtual void draw(int pri, layer l, gerber &g);
   
-private:
+protected:
   double clearance, outer, inner;
   point center;
 };
+
+// Pads are just vias with corresponding holes in the solder mask.
+class pad : public via {
+public:
+  pad(point center, double outer, double inner):
+    via(center, outer, inner) {}
+  pad(point center, double outer, double inner, double clearance):
+    via(center, outer, inner, clearance) {}
+
+  virtual void draw(int pri, layer l, gerber &g);
+};
+
 
 set<drawable*> drawable::drawables;
 set<int> drawable::priorities;
@@ -329,7 +341,7 @@ void track::draw(int pri, layer l, gerber &g) {
 }
 
 void via::draw(int pri, layer l, gerber &g) {
-  if (l >= LAYER_CU0 && l <= LAYER_CU0 + N_CU) {
+  if (l >= LAYER_CU0 && l < LAYER_CU0 + N_CU) {
     if (pri == -50) {
       g.set_clear();
       g.set_aperture(clearance);
@@ -382,7 +394,7 @@ void font::load(istream &in) {
 }
 
 void text::draw(int pri, layer lx, gerber &g) {
-  if (pri == -100 && l == lx) {
+  if (pri == 100 && l == lx) {
     point pos;
     unsigned i;
     for (i = 0, pos = p; i < str.length(); i++)
@@ -390,10 +402,17 @@ void text::draw(int pri, layer lx, gerber &g) {
   }
 }
 
-int main() {
-  ofstream gfile("dump.grb");
-  gerber g(gfile);
+void pad::draw(int pri, layer l, gerber &g) {
+  via::draw(pri, l, g);
 
+  if (pri == 0 && l == LAYER_MASK0 || l == LAYER_MASK1) {
+    g.set_dark();
+    g.set_aperture(outer);
+    g.flash(center);
+  }
+}
+
+int main() {
   for (unsigned i = 0; i < 8; ++i) {
     track *t = new track(0, 1.0/20.0);
     t->add_point(0.1*i, 0.15).add_point(0.1*i, 1.0);
@@ -408,12 +427,36 @@ int main() {
     via *v = new via(point(0.1*i, -1.0), 0.08, 0.035);
   }
 
+  new pad(point(0.1, 0.15), 0.08, 0.035);
+  
   font f("FONT");
-  new text(f, LAYER_CU0, point(0, -1.5), "A10a20a30", 1.0/16);
-  new text(f, LAYER_CU0, point(0, 1.5), "1 2 3", 1.0/8);
-  
-  drawable::draw_layer(LAYER_CU0, g);
-  
+  new text(f, LAYER_CU0, point(0, -1.5), "Aa0", 1.0/16);
+  new text(f, LAYER_SILKSCREEN, point(0, 1.5), "1 2 3", 1.0/8);
+
+  {
+    ofstream gfile("dump.cu0.grb");
+    gerber g(gfile);
+    drawable::draw_layer(LAYER_CU0, g);
+  }
+
+  {
+    ofstream gfile("dump.ss.grb");
+    gerber g(gfile);
+    drawable::draw_layer(LAYER_SILKSCREEN, g);
+  }
+
+  {
+    ofstream gfile("dump.mask0.grb");
+    gerber g(gfile);
+    drawable::draw_layer(LAYER_MASK0, g);
+  }
+
+  {
+    ofstream gfile("dump.pth.grb");
+    gerber g(gfile);
+    drawable::draw_layer(LAYER_PTH, g);
+  }
+
   return 0;
 }
 

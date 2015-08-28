@@ -558,7 +558,7 @@ int main() {
   new R6("B1", point(0.7, -0.5));
 
   new R3V("A3", point(1.7, -1.0));
-  new Dl<1, true>("B3", point(1.7, -0.6));
+  new Dl<1, true>("d3", point(1.7, -0.6));
   (new track(1, 1/20.0))->add_point(1.7, -0.7).add_point(1.7, -0.6);
 
   new DIP40("U1", point(0, 1.5));

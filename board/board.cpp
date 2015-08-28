@@ -229,12 +229,14 @@ protected:
 // Pads are just vias with corresponding holes in the solder mask.
 class pad : public via {
 public:
-  pad(point center, double outer, double inner):
-    via(center, outer, inner) {}
-  pad(point center, double outer, double inner, double clearance):
-    via(center, outer, inner, clearance) {}
+  pad(point center, double outer, double inner, bool top=true):
+    via(center, outer, inner), top(top) {}
+  pad(point center, double outer, double inner, double clear, bool top=true):
+    via(center, outer, inner, clear), top(top) {}
 
   virtual void draw(int pri, layer l, gerber &g);
+private:
+  bool top;
 };
 
 
@@ -454,7 +456,7 @@ void text::draw(int pri, layer lx, gerber &g) {
 void pad::draw(int pri, layer l, gerber &g) {
   via::draw(pri, l, g);
 
-  if (pri == 0 && l == LAYER_MASK0 || l == LAYER_MASK1) {
+  if (pri == 0 && (top && l == LAYER_MASK1) || (!top && l == LAYER_MASK0)) {
     g.set_dark();
     g.set_aperture(outer);
     g.flash(center);
@@ -474,7 +476,7 @@ template <char X, unsigned L, bool V>
 
   new text(get_default_font(),
 	   LAYER_SILKSCREEN,
-	   p0 + (V ? point(-0.1, -0.3): point(0.05, 0)),
+	   p0 + (V ? point(0.1, 0.05): point(0.05, 0)),
 	   name,
 	   1/40.0);
 }
@@ -491,7 +493,7 @@ template <unsigned L, unsigned W, bool V>
     add_pin(oss.str(), p);
     
     if (i == L-1)
-      p += point((V ? 0.1*W : 0), (V ? 0 : 0.1*W));
+      p += point((V ? -0.1*W : 0), (V ? 0 : 0.1*W));
     else
       if (i < L)
         p += point((V ? 0 : 0.1), (V ? 0.1 : 0));
@@ -521,7 +523,14 @@ template <unsigned L, bool V = false> using Dl = twoprong<'D', L, V>;
 typedef Rl<6> R6;
 typedef Rl<3> R3;
 
+typedef Rl<6, true> R6V;
+typedef Rl<3, true> R3V;
+
 typedef dip<8, 3, false> DIP16;
+typedef dip<8, 3, true> DIP16V;
+
+typedef dip<20, 6, false> DIP40;
+typedef dip<20, 6, true> DIP40V;
 
 int main() {
   for (unsigned i = 0; i < 8; ++i) {
@@ -541,15 +550,19 @@ int main() {
   track *t = new track(1, 1/20.0);
   t->add_point(0.7, -1.0).add_point(1.7, -1.0);
   
-  font f("FONT");
-  new text(f, LAYER_CU0, point(0, -1.5), "Aa0", 1.0/16);
-  new text(get_default_font(), LAYER_SILKSCREEN, point(0, 1.5), "1 2 3 Bb", 1.0/8);
+  new text(get_default_font(), LAYER_CU0, point(0, -1.5), "Aa0", 1.0/16);
 
   new DIP16("U0", point(0, -0.15));
 
   new R3("A0", point(0.7, 0.5));
   new R6("B1", point(0.7, -0.5));
 
+  new R3V("A3", point(1.7, -1.0));
+  new Dl<1, true>("B3", point(1.7, -0.6));
+  (new track(1, 1/20.0))->add_point(1.7, -0.7).add_point(1.7, -0.6);
+
+  new DIP40("U1", point(0, 1.5));
+  
   {
     ofstream gfile("dump.cu0.grb");
     gerber g(gfile);
@@ -572,6 +585,12 @@ int main() {
     ofstream gfile("dump.mask0.grb");
     gerber g(gfile);
     drawable::draw_layer(LAYER_MASK0, g);
+  }
+
+  {
+    ofstream gfile("dump.mask1.grb");
+    gerber g(gfile);
+    drawable::draw_layer(LAYER_MASK1, g);
   }
 
   {

@@ -19,14 +19,18 @@ x Design PCB in kicad (with LVS(LVN really) in mind)
     . Tracks
     . A proper way to prioritize drawables to get proper clearance.
     . Vias
-    _ Components
+    . Components
       . Pads
     _ Planes
     _ Scalable Text (part numbers, etc)
       . Rendering engine
-      _ Font
+      _ Font (a-zA-Z0-9_)
+      _ Rotation
   - Draw PCB
     - Proper DIP component
+      . Pins
+      _ Silkscreen outline with pin 1 mark.
+    - Tstrip component
     - Breadboard "component" with 0 pins
     - USB connector component
     - Centronics connector component

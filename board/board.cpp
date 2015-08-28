@@ -39,6 +39,10 @@ struct point {
   bool operator==(const point &r) const { return r.x == x && r.y == y; }
   bool operator!=(const point &r) const { return r.x != x || r.y != y; }
   point operator+(const point &r) const { return point(x + r.x, y + r.y); }
+  point operator-(const point &r) const { return point(x - r.x, y - r.y); }
+  
+  point operator+=(const point &r) { x += r.x; y += r.y; }
+  point operator-=(const point &r) { x -= r.x; y -= r.y; }
 
   point scale(double r) const { return point(r*x, r*y); }
 };
@@ -115,6 +119,8 @@ private:
   map<char, vector<point> > f;
 };
 
+font &get_default_font();
+
 class text : public drawable {
 public:
   text(const font &f, int layer, point pos, string str, double scale):
@@ -130,11 +136,54 @@ private:
   point p;
 };
 
-class component : public drawable {
+class pin {
 public:
-  component() {}
+  pin() {}
+  pin(string name, point p, const set<layer> &l): name(name), p(p), l(l) {}
+  pin(string name, point p): name(name), p(p) {
+    for (int i = 0; i < N_CU; ++i) l.insert(layer(LAYER_CU0 + i));
+  }
 
-  virtual void draw(int pri, layer l, gerber &g) = 0;
+  point get_loc() const { return p; }
+  string get_name() const { return name; }
+
+private:
+  set<layer> l;
+  point p;
+  string name;
+};
+
+class component {
+public:
+  component(string name): name(name) {}
+  virtual ~component() {}
+  string get_name() const { return name; }
+  virtual string get_type_name() = 0;
+  const pin &get_pin(string name) const { return pins.find(name)->second; }
+
+protected:
+  void add_pin(string name, point loc)
+    { pins[name] = pin(name, loc); }
+  
+  void add_pin(string name, point loc, const set<layer> &l)
+    { pins[name] = pin(name, loc, l); }
+  
+  map<string, pin> pins;
+  string name;
+};
+
+template <char X, unsigned L, bool V = false> class twoprong : public component
+{
+public:
+  twoprong(string name, point pos);
+  string get_type_name() { return string(X, 1); }
+};
+
+template <unsigned L, unsigned W, bool V = false> class dip : public component
+{
+public:
+  dip(string name, point pos);
+  string get_type_name() { return "U"; }
 };
 
 // Linear (as in non-branching, not necessarily straight) circuit trace.
@@ -412,6 +461,68 @@ void pad::draw(int pri, layer l, gerber &g) {
   }
 }
 
+template <char X, unsigned L, bool V>
+  twoprong<X,L,V>::twoprong(string name, point p0): component(name)
+{
+  point p1 = point(p0.x + (V ? 0 : L*0.1), p0.y + (V ? L*0.1 : 0));
+
+  new pad(p0, 0.08, 0.035);
+  new pad(p1, 0.08, 0.035);
+
+  add_pin("0", p0);
+  add_pin("1", p1);
+
+  new text(get_default_font(),
+	   LAYER_SILKSCREEN,
+	   p0 + (V ? point(-0.1, -0.3): point(0.05, 0)),
+	   name,
+	   1/40.0);
+}
+
+template <unsigned L, unsigned W, bool V>
+  dip<L,W,V>::dip(string name, point p0): component(name)
+{
+  point p = p0;
+  for (unsigned i = 0; i < L*2; ++i) {
+    new pad(p, 0.08, 0.035);
+
+    ostringstream oss;
+    oss << i + 1;
+    add_pin(oss.str(), p);
+    
+    if (i == L-1)
+      p += point((V ? 0.1*W : 0), (V ? 0 : 0.1*W));
+    else
+      if (i < L)
+        p += point((V ? 0 : 0.1), (V ? 0.1 : 0));
+      else
+        p -= point((V ? 0 : 0.1), (V ? 0.1 : 0));
+  }
+  
+  new text(get_default_font(),
+	   LAYER_SILKSCREEN,
+	   p0 + (V ? point(-0.1, -0.3): point(0.1, 0.05)),
+	   name,
+	   1/25.0);
+}
+
+font &get_default_font() {
+  static font* p = new font("FONT");
+  return *p;
+}
+
+// Some nice, but not essential typedefs.
+
+template <unsigned L, bool V = false> using Ll = twoprong<'L', L, V>;
+template <unsigned L, bool V = false> using Cl = twoprong<'C', L, V>;
+template <unsigned L, bool V = false> using Rl = twoprong<'R', L, V>;
+template <unsigned L, bool V = false> using Dl = twoprong<'D', L, V>;
+
+typedef Rl<6> R6;
+typedef Rl<3> R3;
+
+typedef dip<8, 3, false> DIP16;
+
 int main() {
   for (unsigned i = 0; i < 8; ++i) {
     track *t = new track(0, 1.0/20.0);
@@ -427,16 +538,28 @@ int main() {
     via *v = new via(point(0.1*i, -1.0), 0.08, 0.035);
   }
 
-  new pad(point(0.1, 0.15), 0.08, 0.035);
+  track *t = new track(1, 1/20.0);
+  t->add_point(0.7, -1.0).add_point(1.7, -1.0);
   
   font f("FONT");
   new text(f, LAYER_CU0, point(0, -1.5), "Aa0", 1.0/16);
-  new text(f, LAYER_SILKSCREEN, point(0, 1.5), "1 2 3 Bb", 1.0/8);
+  new text(get_default_font(), LAYER_SILKSCREEN, point(0, 1.5), "1 2 3 Bb", 1.0/8);
+
+  new DIP16("U0", point(0, -0.15));
+
+  new R3("A0", point(0.7, 0.5));
+  new R6("B1", point(0.7, -0.5));
 
   {
     ofstream gfile("dump.cu0.grb");
     gerber g(gfile);
     drawable::draw_layer(LAYER_CU0, g);
+  }
+
+  {
+    ofstream gfile("dump.cu1.grb");
+    gerber g(gfile);
+    drawable::draw_layer(LAYER_CU1, g);
   }
 
   {

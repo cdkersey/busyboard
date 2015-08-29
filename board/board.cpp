@@ -55,7 +55,9 @@ struct point {
     return (x < r.x) || ((x == r.x) && y < r.y);
   }
 
-  point neighborhood() const { return point(quantize(x, 1e-4), quantize(y, 1e-4)); }
+  point neighborhood() const {
+    return point(quantize(x, 1e-4), quantize(y, 1e-4));
+  }
 
   point scale(double r) const { return point(r*x, r*y); }
 
@@ -141,6 +143,21 @@ private:
 };
 
 font &get_default_font();
+
+class poly : public drawable {
+public:
+  poly(layer l, double ap = 0.010): l(l), ap(ap) { add_priority(0); }
+
+  poly &add_point(point p) { points.push_back(p); return *this; }
+  poly &add_point(double x, double y) { return add_point(point(x, y)); }
+
+  virtual void draw(int pri, layer lay, gerber &g);
+
+private:
+  double ap;
+  layer l;
+  vector<point> points;
+};
 
 class text : public drawable {
 public:
@@ -441,6 +458,7 @@ void err(errcode e) {
   switch(e) {
   case ERR_POINT_SET: cerr << "Point not set." << endl;      break;
   case ERR_MODE_SET:  cerr << "Dark/clear not set." << endl; break;
+  case ERR_APERTURE_SET: cerr << "Aperture not set." << endl; break;
   }
 
   abort();
@@ -539,6 +557,16 @@ void pad::draw(int pri, layer l, gerber &g) {
   }
 }
 
+void poly::draw(int pri, layer lay, gerber &g) {
+  if (l == lay && pri == 0) {
+    g.set_dark();
+    g.set_aperture(ap);
+    g.move(points[0]);
+    for (unsigned i = 1; i < points.size(); ++i) g.draw(points[i]);
+    g.draw(points[0]);
+  }
+}
+
 template <char X, unsigned L, bool V>
   twoprong<X,L,V>::twoprong(string name, point p0): component(name)
 {
@@ -579,9 +607,23 @@ template <unsigned L, unsigned W, bool V>
   
   new text(get_default_font(),
 	   LAYER_SILKSCREEN,
-	   p0 + (V ? point(-0.1, -0.3): point(0.1, 0.05)),
+	   p0 + (V ? point(-0.1, -0.3): point(0.15, 0.1)),
 	   name,
-	   1/25.0);
+	   1/40.0);
+
+  (new poly(LAYER_SILKSCREEN))->
+    add_point(p0 + point(0, 0.05)).
+    add_point(p0 + point(0, 0.1*W - 0.05)).
+    add_point(p0 + point(0.1*(L-1), 0.1*W - 0.05)).
+    add_point(p0 + point(0.1*(L-1), 0.05));
+
+  (new poly(LAYER_SILKSCREEN))->
+    add_point(p0 + point(0, W*0.05 + 0.05)).
+    add_point(p0 + point(0.05, W*0.05 + 0.05)).
+    add_point(p0 + point(0.1, W*0.05)).
+    add_point(p0 + point(0.05, W*0.05 - 0.05)).
+    add_point(p0 + point(0, W*0.05 - 0.05));
+  
 }
 
 void pin::get_points(set<pair<point, int> > &s) {
@@ -810,7 +852,7 @@ int main() {
 
   (new track(0, 1/20.0))->add_point(0,-1).add_point(0.1,-1).add_point(0.2,-1);
   (new track(0, 1/20.0))->add_point(0, 0.15).add_point(0,-0.15);
-  
+
   #else
 
   R3 *r0 = new R3("A0", point(0, 0));

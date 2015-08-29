@@ -494,7 +494,10 @@ point font::draw_char(gerber &g, char c, point p, double scale) const {
   g.set_dark();
   g.set_aperture(scale/5.0);
   for (unsigned i = 0; i < v.size(); i += 2) {
-    g.draw(p + v[i].scale(scale), p + v[i+1].scale(scale));
+    if (v[i] != v[i+1])
+      g.draw(p + v[i].scale(scale), p + v[i+1].scale(scale));
+    else
+      g.flash(p + v[i].scale(scale));
     if (v[i].x > width) width = v[i].x;
     if (v[i + 1].x > width) width = v[i + 1].x;
   }
@@ -784,7 +787,9 @@ int main() {
   track *t = new track(1, 1/20.0);
   t->add_point(0.7, -1.0).add_point(1.7, -1.0);
   
-  new text(get_default_font(), LAYER_CU0, point(0, -1.5), "Aa0", 1.0/16);
+  new text(get_default_font(), LAYER_CU0, point(0, -1.5),
+	   "01237?$@#AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz",
+	   1.0/16);
 
   DIP16 &u0(*(new DIP16("U0", point(0, -0.15))));
 

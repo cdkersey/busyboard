@@ -788,7 +788,7 @@ int main() {
   t->add_point(0.7, -1.0).add_point(1.7, -1.0);
   
   new text(get_default_font(), LAYER_CU0, point(0, -1.5),
-	   "01237?$@#AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz",
+	   "1-244-867-5309?$@*&#AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz",
 	   1.0/16);
 
   DIP16 &u0(*(new DIP16("U0", point(0, -0.15))));

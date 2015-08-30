@@ -179,13 +179,56 @@ void make_board() {
   (new track(0, 1/20.0))->
     add_point(5.9,-0.6).add_point(6.0,-0.6).add_point(6.1,-0.6);
 
+  // Bottom row carries.
+  for (unsigned i = 0; i < 5; ++i) {
+    (new track(0, 0.01))->add_point(i + 0.7, 0.3).add_point(i + 0.7, 0.2);
+    (new via(point(i + 0.7, 0.2), 0.06, 0.035));
+    (new track(0, 0.01))->add_point(i + 0.7, 0.2).add_point(i + 1.1, 0.2);
+    (new track(1, 0.01))->add_point(i + 1.1, 0).add_point(i + 1.1, 0.2);
+    (new via(point(i + 1.1, 0.2), 0.06, 0.035));
+  }
+
+  // Global I/O strobe and clock
+  track *net29_upper = new track(0, 0.01),
+        *net29_lower = new track(0, 0.01),
+        *net20_upper = new track(0, 0.01),
+        *net20_lower = new track(0, 0.01);
+	
+  for (unsigned i = 0; i < 6; ++i) {
+    net29_upper->add_point(i + 0.9, 1.25);
+    net29_lower->add_point(i, -0.05);
+    net20_upper->add_point(i + 1.0, 1.30);
+    net20_lower->add_point(i + 0.2, -0.1);
+    
+    (new track(1, 0.01))->add_point(i + 0.9, 1.05).add_point(i + 0.9, 1.25);
+    (new via(point(i + 0.9, 1.25), 0.06, 0.035));
+    (new track(0, 0.01))->add_point(i, 0).add_point(i, -0.05);
+
+    (new track(1, 0.01))->add_point(i + 0.2, -0.1).add_point(i + 0.2, 0);
+    (new via(point(i + 0.2, -0.1), 0.06, 0.035));
+    (new track(1, 0.01))->add_point(i + 1.0, 1.05).add_point(i + 1.0, 1.30);
+    (new via(point(i + 1.0, 1.3), 0.06, 0.035));
+    
+  }
+  (new track(0, 0.01))-> // Connect U7
+    add_point(5.0, -0.05).add_point(6.5,-0.05);
+  (new via(point(6.5, -0.05), 0.06, 0.035));
+  (new track(1, 0.01))->
+    add_point(6.5, -0.05).add_point(6.5, 0.5);
+  (new track(1, 0.01))-> // Connect upper to lower
+    add_point(0,0).add_point(-0.05,0.05).add_point(-0.05,1.1);
+  (new via(point(-0.05,1.1), 0.06, 0.035));
+  (new track(0, 0.01))->
+    add_point(-0.05,1.1).add_point(0.45, 1.1).
+    add_point(0.45,1.25).add_point(0.9,1.25);
+  
   map<string, net*> nets;
   load_nets(c, nets);
 
   wire::expand_nets();  
   wire::check_nets();
 
-  nets["vdd"]->mark();
+  nets["20"]->mark();
 }
 
 int main() {

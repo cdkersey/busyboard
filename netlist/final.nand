@@ -1,0 +1,36 @@
+module<usb_b> vdd_in nc1 nc2 gnd
+module<r10ohm> vdd_in vdd
+module<led> vdd_in r_pwrled
+module<r1600ohm> r_pwrled gnd
+module<c1uF> vdd gnd
+module<c1uF> vdd gnd
+module<c1uF> vdd gnd
+module<c1uF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<c100nF> vdd gnd
+module<tstrip> 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 gnd gnd gnd vdd vdd vdd
+module<74hc4094> 21 20 29 82 0 1 34 35 36 37 38 39 40 41
+module<74hc4094> 0 20 29 83 2 3 42 43 44 45 46 47 48 49
+module<74hc4094> 2 20 29 84 4 5 50 51 52 53 54 55 56 57
+module<74hc4094> 4 20 29 85 6 7 58 59 60 61 62 63 64 65
+module<74hc4094> 6 20 29 86 8 9 66 67 68 69 70 71 72 73
+module<74hc4094> 8 20 29 87 10 11 74 75 76 77 78 79 80 81
+module<74hc4094> 10 20 29 vdd 12 13 82 83 84 85 86 87 88 89
+module<74hc597> gnd 34 35 36 37 38 39 40 41 29 20 31 vdd 14
+module<74hc597> 14 42 43 44 45 46 47 48 49 29 20 31 vdd 15
+module<74hc597> 15 50 51 52 53 54 55 56 57 29 20 31 vdd 16
+module<74hc597> 16 58 59 60 61 62 63 64 65 29 20 31 vdd 17
+module<74hc597> 17 66 67 68 69 70 71 72 73 29 20 31 vdd 18
+module<74hc597> 18 74 75 76 77 78 79 80 81 29 20 31 vdd 19
+module<centronics_parallel> 19 gnd gnd gnd gnd 20 21 22 23 24 25 26 27 28 29 30 31

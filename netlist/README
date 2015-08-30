@@ -1,0 +1,5 @@
+.nand pin order -> device pin order mapped in PMAP
+
+netmap output format:
+  type device
+  net_name device pin device pin device pin

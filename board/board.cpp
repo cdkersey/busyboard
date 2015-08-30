@@ -388,9 +388,29 @@ void make_board() {
     (new track(1, 0.01))->
       add_point(0.3 + 0.1 * i, 0).add_point(0.3 + 0.1 * i,-0.35 - 0.025*i).
       add_point(0.1 * i,-0.35 - 0.025*i).add_point(0.1 * i,-0.6);
-  (new track(0, 0.01))->
-    add_point(.15, -.15).add_point(.15, -.5).add_point(.4,-.5).add_point(.4,-.6);
-  
+  for (unsigned i = 0; i < 2; ++i) // Bits 4, 5
+    (new track(0, 0.01))->
+      add_point(.15 + i*0.1, -.15).add_point(.15 + i*0.1, -.5 + 0.025*i).
+      add_point(.4 + i * 0.1,-.5 + 0.025*i).add_point(.4 + i*0.1,-.6);
+  (new track(0, 0.01))-> // Bit 6
+    add_point(.8, -.3).add_point(.6, -.3).add_point(.6, -.6);
+  (new track(0, 0.01))-> // Bit 7
+    add_point(0.8, -.15).add_point(0.85,-.2).add_point(0.85,-.35).
+    add_point(0.7,-.35).add_point(0.7,-.6);
+  for (unsigned i = 0; i < 4; ++i) // Bits 8 - 11
+    (new track(1, 0.01))->
+      add_point(1.3 + 0.1*i, 0).add_point(1.3 + 0.1*i, -0.35 - 0.025*i).
+      add_point(0.8 + 0.1*i, -0.35 - 0.025*i).add_point(0.8 + 0.1*i, -0.6);
+  for (unsigned i = 0; i < 2; ++i) // Bits 12, 13
+    (new track(0, 0.01))->
+      add_point(1.15 + i*0.1, -.15).add_point(1.15 + i*0.1, -.5 + 0.025*i).
+      add_point(1.2 + i * 0.1,-.5 + 0.025*i).add_point(1.2 + i*0.1,-.6);
+  (new track(0, 0.01))-> // Bit 14
+    add_point(1.8, -.3).add_point(1.4, -.3).add_point(1.4, -.6);
+  (new track(0, 0.01))-> // Bit 15
+    add_point(1.8, -.15).add_point(1.85,-.2).add_point(1.85,-.35).
+    add_point(1.5,-.35).add_point(1.5,-.6);
+    
   map<string, net*> nets;
   load_nets(c, nets);
 

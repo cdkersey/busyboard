@@ -161,20 +161,20 @@ void make_board() {
     add_point(6.2,0.6).add_point(6.4,0.6).add_point(6.4,0.5);
   (new track(0, 1/20.0))->
     add_point(6.4,0.6).add_point(7.2, 0.6).add_point(7.2,0.5);
-  (new via(point(6.2,0.1), 0.08, 0.035));
-  (new via(point(6.2,0.6), 0.08, 0.035));
+  (new via(point(6.2,0.1), 0.06, 0.035));
+  (new via(point(6.2,0.6), 0.06, 0.035));
   (new track(0, 1/20.0))-> // VDD connection to U7.
     add_point(5.5,1.15).add_point(6.1,1.15).add_point(6.5,1.15);
-  (new via(point(6.5,1.15), 0.08, 0.035));
+  (new via(point(6.5,1.15), 0.06, 0.035));
   (new track(1, 1/20.0))->add_point(6.5,1.15).add_point(6.5,0.8);
   (new track(0, 1/20.0))->
     add_point(6.4,0.8).add_point(6.5,0.8).add_point(6.6,0.8);
   (new track(1, 1/20.0))->add_point(0,0.3).add_point(0,1.05); // VDD to upper
-  (new via(point(0,1.05), 0.08, 0.035));
+  (new via(point(0,1.05), 0.06, 0.035));
   (new track(0, 1/20.0))->add_point(0,1.05).add_point(0.4,1.05);
   (new track(1, 1/20.0))-> // VDD to tstrip
     add_point(6.0,-0.6).add_point(6.0,0.4);
-  (new via(point(6.0,0.4), 0.08, 0.035));
+  (new via(point(6.0,0.4), 0.06, 0.035));
   (new track(0, 1/20.0))->add_point(6.0,0.4).add_point(5.0,0.4);
   (new track(0, 1/20.0))->
     add_point(5.9,-0.6).add_point(6.0,-0.6).add_point(6.1,-0.6);

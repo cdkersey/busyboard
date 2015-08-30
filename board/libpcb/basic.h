@@ -60,7 +60,7 @@ template <unsigned L, unsigned W, bool V>
   
   point p = p0;
   for (unsigned i = 0; i < L*2; ++i) {
-    new pad(p, 0.08, 0.035);
+    new pad(p, 0.06, 0.035);
 
     ostringstream oss;
     oss << i + 1;
@@ -103,8 +103,8 @@ template <char X, unsigned L, bool V>
   
   point p1 = point(p0.x + (V ? 0 : L*0.1), p0.y + (V ? L*0.1 : 0));
 
-  new pad(p0, 0.08, 0.035);
-  new pad(p1, 0.08, 0.035);
+  new pad(p0, 0.06, 0.035);
+  new pad(p1, 0.06, 0.035);
 
   add_pin("1", p0);
   add_pin("2", p1);

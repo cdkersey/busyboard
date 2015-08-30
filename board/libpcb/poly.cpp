@@ -12,3 +12,13 @@ void libpcb::poly::draw(int pri, layer lay, gerber &g) {
     g.draw(points[0]);
   }
 }
+
+void libpcb::plane::draw(int pri, layer lyr, gerber &g) {
+  if (lyr == l && pri == -1000) {
+    g.start_region();
+    g.draw(p0, point(p0.x, p1.y));
+    g.draw(p1);
+    g.draw(point(p1.x, p0.y));
+    g.end_region();
+  }
+}

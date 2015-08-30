@@ -14,7 +14,8 @@ class gerber {
 public:
   gerber(std::ostream &out):
     out(out),
-    mode_set(false), mode_clear(false), point_set(false), aperture_set(false)
+      mode_set(false), mode_clear(false), point_set(false), aperture_set(false),
+      mode_region(false)
   { init(); }
 
   ~gerber() { out << "M02*" << std::endl; }
@@ -22,6 +23,10 @@ public:
   // Set the drawing mode.
   void set_dark();
   void set_clear();
+
+  // Create a region (filled area)
+  void start_region();
+  void end_region();
   
   // Set the current aperature (only circular supported)
   void set_aperture(double d);
@@ -38,7 +43,7 @@ public:
   void flash(point pt);
   
 private:
-  bool mode_set, mode_clear, point_set, aperture_set;
+  bool mode_set, mode_clear, point_set, aperture_set, mode_region;
   
   std::ostream &out;
   std::map<double, std::string> apertures; // Cache so we don't repeat ourselves

@@ -16,7 +16,7 @@ public:
   { add_priority(-50); add_priority(0); }
 
   track(int layer_idx, double thickness):
-    layer_idx(layer_idx), thickness(thickness), clearance(thickness*1.25)
+    layer_idx(layer_idx), thickness(thickness), clearance(thickness + 0.02)
   { add_priority(-50); add_priority(0); }
 
   track &add_point(point pt) { points.push_back(pt); return *this; }

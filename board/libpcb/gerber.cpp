@@ -41,9 +41,11 @@ void libpcb::gerber::move(point to) {
 
 // Draw line segments in current aperture
 void libpcb::gerber::draw(point to) {
-  if (!point_set) err(ERR_POINT_SET);
-  if (!mode_set) err(ERR_MODE_SET);
-  if (!aperture_set) err(ERR_APERTURE_SET);
+  if (!mode_region) {
+    if (!point_set) err(ERR_POINT_SET);
+    if (!mode_set) err(ERR_MODE_SET);
+    if (!aperture_set) err(ERR_APERTURE_SET);
+  }
   
   coord(to);
   out << "D01*" << endl;
@@ -105,6 +107,8 @@ void libpcb::gerber::num(double x) {
 }
 
 void libpcb::gerber::set_dark() {
+  if (mode_region) err(ERR_MODE_SET);
+  
   if (!mode_set || (mode_set && mode_clear))
     out << "%LPD*%" << endl;
   mode_set = true;
@@ -112,8 +116,31 @@ void libpcb::gerber::set_dark() {
 }
 
 void libpcb::gerber::set_clear() {
+  if (mode_region) err(ERR_MODE_SET);
+
   if (!mode_set || (mode_set && !mode_clear))
     out << "%LPC*%" << endl;
   mode_set = true;
   mode_clear = true;
+}
+
+void libpcb::gerber::start_region() {
+  if (!mode_region) {
+    out << "G36*" << endl;
+
+    mode_set = mode_clear = false;
+    mode_region = true;
+  } else {
+    err(ERR_MODE_SET);
+  }
+}
+
+void libpcb::gerber::end_region() {
+  if (mode_region) {
+    out << "G37*" << endl;
+
+    mode_region = false;
+  } else {
+    err(ERR_MODE_SET);
+  }
 }

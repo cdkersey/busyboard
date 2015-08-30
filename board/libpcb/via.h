@@ -10,7 +10,7 @@ namespace libpcb {
 class via : public drawable, public wire {
 public:
   via(point center, double outer, double inner):
-    center(center), outer(outer), inner(inner), clearance(outer*1.25)
+    center(center), outer(outer), inner(inner), clearance(outer + 0.02)
   { add_priority(-50); add_priority(0); }
 
   via(point center, double outer, double inner, double clearance):

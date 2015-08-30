@@ -122,20 +122,23 @@ void make_board() {
   place_breadboard(point(0, -2.9));
 
   // Route vdd, gnd
-  track *gnd_lower = new track(0, 1/20.0), *gnd_upper = new track(0, 1/20.0);
+  track *gnd_upper = new track(0, 1/20.0);
   track *vdd_lower = new track(0, 1/20.0), *vdd_upper = new track(0, 1/20.0);
   for (unsigned i = 0; i < 6; ++i) {
-    gnd_lower->add_point(i - 0.1, 0.1); // cap
+    // gnd_lower->add_point(i - 0.1, 0.1); // cap
     gnd_upper->add_point(i + 0.4, 0.85);
-    gnd_lower->add_point(i + 0.7, 0.1); // IC ground pin
+    // gnd_lower->add_point(i + 0.7, 0.1); // IC ground pin
     gnd_upper->add_point(i + 1.2, 0.85);
     vdd_lower->add_point(i, 0.4);
     vdd_upper->add_point(i + 0.5, 1.15);
     vdd_upper->add_point(i + 1.1, 1.15);
     
     // Connect gnd
-    (new track(0, 1/20.0))->add_point(i - 0.1, 0.1).add_point(i - 0.1, 0);
-    (new track(0, 1/20.0))->add_point(i + 0.7, 0.1).add_point(i + 0.7, 0);
+    (new track(0, 1/20.0))->
+      add_point(i - 0.1, 0).add_point(i - 0.1, 0.1).
+      add_point(i + 0.7, 0.1).add_point(i + 0.7, 0);
+    if (i < 5)
+      (new track(0, 1/20.0))->add_point(i + 0.7, 0).add_point(i + 0.9, 0);
     (new track(0, 1/20.0))->add_point(i + 0.4, 0.85).add_point(i + 0.4, 0.75);
     (new track(0, 1/20.0))->add_point(i + 1.2, 0.85).add_point(i + 1.2, 0.75);
 
@@ -154,14 +157,14 @@ void make_board() {
   (new track(0, 1/20.0))->
     add_point(5.6, -0.6).add_point(5.7,-0.6).add_point(5.8,-0.6);
   (new track(0, 1/20.0))-> // Connect lower and upper ground tracks
-    add_point(5.7, 0.1).add_point(6.2,0.1);
+    add_point(5.7, 0).add_point(6.2,0);
   (new track(1, 1/20.0))->
-    add_point(6.2,0.1).add_point(6.2,0.6).add_point(6.2,0.75);
+    add_point(6.2,0).add_point(6.2,0.6).add_point(6.2,0.75);
   (new track(0, 1/20.0))->
     add_point(6.2,0.6).add_point(6.4,0.6).add_point(6.4,0.5).add_point(6.4,0.4);
   (new track(0, 1/20.0))->
     add_point(6.4,0.4).add_point(7.2, 0.4).add_point(7.2,0.5);
-  (new via(point(6.2,0.1), 0.06, 0.035));
+  (new via(point(6.2,0), 0.06, 0.035));
   (new via(point(6.2,0.6), 0.06, 0.035));
   (new track(0, 1/20.0))-> // VDD connection to U7.
     add_point(5.5,1.15).add_point(6.1,1.15).add_point(6.5,1.15);
@@ -190,7 +193,7 @@ void make_board() {
 
   // Carry to U7
   (new track(0, 0.01))->
-    add_point(5.7,0.3).add_point(5.75,0.25).add_point(6.275, 0.25).
+    add_point(5.7,0.3).add_point(6.225,0.3).
     add_point(6.35,0.175).add_point(6.6,0.175);
   (new via(point(6.6,0.175),0.06,0.035));
   (new track(1,0.01))->
@@ -340,12 +343,31 @@ void make_board() {
     (new track(0, 0.01))->
       add_point(i + 0.3, 1.55).add_point(i + 0.85, 1.55);
 
-    (new track(1, 0.01))-> // U8 6 to U1 12
-      add_point(i + 0.4, 0.3);
+    (new track(0, 0.01))-> // U8 6 to U1 12
+      add_point(i + 0.4, 0.3).add_point(i + 0.45, 0.25).
+      add_point(i + 0.75, 0.25);
+    (new via(point(i + 0.75, 0.25), 0.06, 0.035));
+    (new track(1, 0.01))->
+      add_point(i + 1, 0.75).add_point(i + 0.95, 0.7).add_point(i + 0.75, 0.7).
+      add_point(i + 0.75, 0.25);
 
-    // (new track(1, 0.01))-> // U8 7 to U1 11
-    //  add_point();
+    (new track(0, 0.01))-> // U8 7 to U1 11
+      add_point(i + 0.4, 0.3).add_point(i + 0.45, 0.25).
+      add_point(i + 0.75, 0.25);
+    (new via(point(i + 0.75, 0.25), 0.06, 0.035));
+    (new track(1, 0.01))->
+      add_point(i + 1.1, 0.75).add_point(i + 1, 0.65).
+      add_point(i + 0.8, 0.65).add_point(i + 0.8, 0.15);
+    (new via(point(i + 0.8, 0.15), 0.06, 0.035));
+    (new track(0, 0.01))->
+      add_point(i + 0.8, 0.15).add_point(i + 0.5, 0.15).add_point(i + 0.5, 0.2);
+    (new via(point(i + 0.5, 0.2), 0.06, 0.035));
+    (new track(1, 0.01))->
+      add_point(i + 0.5, 0.2).add_point(i + 0.5, 0.3);
   }
+
+  // Connecting J2
+  
   
   map<string, net*> nets;
   load_nets(c, nets);

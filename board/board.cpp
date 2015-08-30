@@ -158,9 +158,9 @@ void make_board() {
   (new track(1, 1/20.0))->
     add_point(6.2,0.1).add_point(6.2,0.6).add_point(6.2,0.75);
   (new track(0, 1/20.0))->
-    add_point(6.2,0.6).add_point(6.4,0.6).add_point(6.4,0.5);
+    add_point(6.2,0.6).add_point(6.4,0.6).add_point(6.4,0.5).add_point(6.4,0.4);
   (new track(0, 1/20.0))->
-    add_point(6.4,0.6).add_point(7.2, 0.6).add_point(7.2,0.5);
+    add_point(6.4,0.4).add_point(7.2, 0.4).add_point(7.2,0.5);
   (new via(point(6.2,0.1), 0.06, 0.035));
   (new via(point(6.2,0.6), 0.06, 0.035));
   (new track(0, 1/20.0))-> // VDD connection to U7.
@@ -188,6 +188,23 @@ void make_board() {
     (new via(point(i + 1.1, 0.2), 0.06, 0.035));
   }
 
+  // Carry to U7
+  (new track(0, 0.01))->
+    add_point(5.7,0.3).add_point(5.75,0.25).add_point(6.275, 0.25).
+    add_point(6.35,0.175).add_point(6.6,0.175);
+  (new via(point(6.6,0.175),0.06,0.035));
+  (new track(1,0.01))->
+    add_point(6.6,0.175).add_point(6.6,0.5);
+
+  // Top row carries.
+  for (unsigned i = 0; i < 5; ++i) {
+    (new track(1, 0.01))->add_point(i + 1.2, 1.05).add_point(i + 1.2, 1.45);
+    (new track(1, 0.01))->add_point(i + 1.7, 1.05).add_point(i + 1.7, 1.45);
+    (new via(point(i + 1.2,1.45),0.06,0.035));
+    (new via(point(i + 1.7,1.45),0.06,0.035));
+    (new track(0, 0.01))->add_point(i + 1.2, 1.45).add_point(i + 1.7, 1.45);
+  }
+  
   // Global I/O strobe and clock
   track *net29_upper = new track(0, 0.01),
         *net29_lower = new track(0, 0.01),
@@ -256,7 +273,36 @@ void make_board() {
   }
   (new track(1, 0.01))->add_point(0.1, 0.3).add_point(0.1, 1.4);
   (new via(point(0.1, 1.4), 0.06, 0.035));
-  (new track(0, 0.01))->add_point(0.1, 1.4).add_point(6.1, 1.4);
+  (new track(0, 0.01))->add_point(0.1, 1.4).add_point(6.7, 1.4);
+  (new track(1, 0.01))-> // connect U7 to U1's OE
+    add_point(6.8,0.5).add_point(6.75,0.55).add_point(6.75,0.85).
+    add_point(6.7,0.9).add_point(6.7,1.4);
+  (new via(point(6.7, 1.4), 0.06, 0.035));
+  (new track(0, 0.01))-> // Connect U7 to U6's OE
+    add_point(6.1,0.675).add_point(6.125,0.7).add_point(6.8,0.7);
+  (new via(point(6.8, 0.7), 0.06, 0.035));
+  (new track(1, 0.01))->
+    add_point(6.8, 0.7).add_point(6.8, 0.8);
+  (new track(0, 0.01))-> // connect U7 to U5's OE
+    add_point(6.1,0.625).add_point(6.125,0.65).add_point(6.7,0.65);
+  (new via(point(6.7, 0.65), 0.06, 0.035));
+  (new track(1, 0.01))->
+    add_point(6.7, 0.65).add_point(6.7, 0.8);
+  (new track(0, 0.01))-> // connect U7 to U4's OE
+    add_point(6.1, 0.575).add_point(6.35, 0.325).add_point(7.1, 0.325);
+  (new via(point(7.1, 0.325), 0.06, 0.035));
+  (new track(1, 0.01))->
+    add_point(7.1, 0.325).add_point(7.1, 0.5);
+  (new track(0, 0.01))-> // connect U7 to U3's OE
+    add_point(6.1, 0.525).add_point(6.35, 0.275).add_point(7.0, 0.275);
+  (new via(point(7.0, 0.275), 0.06, 0.035));
+  (new track(1, 0.01))->
+    add_point(7.0, 0.275).add_point(7.0, 0.5);
+  (new track(0, 0.01))-> // connect U7 to U2's OE
+    add_point(6.1, 0.475).add_point(6.35, 0.225).add_point(6.9, 0.225);
+  (new via(point(6.9, 0.225), 0.06, 0.035));
+  (new track(1, 0.01))->
+    add_point(6.9, 0.225).add_point(6.9, 0.5);  
   
   map<string, net*> nets;
   load_nets(c, nets);

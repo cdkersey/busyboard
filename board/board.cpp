@@ -303,6 +303,49 @@ void make_board() {
   (new via(point(6.9, 0.225), 0.06, 0.035));
   (new track(1, 0.01))->
     add_point(6.9, 0.225).add_point(6.9, 0.5);  
+
+  // Main I/O wires
+  for (unsigned i = 0; i < 6; ++i) {
+    (new track(0, 0.01))-> // U8 15 to U1 4
+      add_point(i + 0.6, 1.05).add_point(i + 0.55, 1.0).
+      add_point(i + 0.4, 1.0).add_point(i + 0.35, 0.95);
+    (new via(point(i + 0.35, 0.95), 0.06, 0.035));
+    (new track(1, 0.01))->
+      add_point(i + 0.35, 0.95).add_point(i + 0.35, 0.05).add_point(i + 0.3, 0);
+
+    for (unsigned j = 0; j < 3; ++j) { // U8 1-3 to U1 5-7
+      (new track(1, 0.01))-> 
+        add_point(i + 0.5 + 0.1 * j, 0.75).add_point(i + 0.45 + 0.1 * j, 0.7).
+        add_point(i + 0.45 + 0.1 * j, 0.05).add_point(i + 0.4 + 0.1 * j, 0);
+    }
+
+    (new track(1, 0.01))-> // U8 4 to U1 14
+      add_point(i + 0.8, 0.75).add_point(i + 0.75, 0.8).
+      add_point(i + 0.75, 1.5);
+    (new via(point(i + 0.75, 1.5), 0.06, 0.035));
+    (new track(0, 0.01))->
+      add_point(i + 0.75, 1.5).add_point(i + 0.25, 1.5);
+    (new via(point(i + 0.25, 1.5), 0.06, 0.035));
+    (new track(1, 0.01))->
+      add_point(i + 0.25, 1.5).add_point(i + 0.25, 0.35).
+      add_point(i + 0.2, 0.3);
+
+    (new track(1, 0.01))-> // U8 5 to U1 13
+      add_point(i + 0.9, 0.75).add_point(i + 0.85, 0.8).
+      add_point(i + 0.85, 1.55);
+    (new via(point(i + 0.85, 1.55), 0.06, 0.035));
+    (new via(point(i + 0.3, 1.55), 0.06, 0.035));
+    (new track(1, 0.01))->
+      add_point(i + 0.3, 0.3).add_point(i + 0.3, 1.55);
+    (new track(0, 0.01))->
+      add_point(i + 0.3, 1.55).add_point(i + 0.85, 1.55);
+
+    (new track(1, 0.01))-> // U8 6 to U1 12
+      add_point();
+
+    // (new track(1, 0.01))-> // U8 7 to U1 11
+    //  add_point();
+  }
   
   map<string, net*> nets;
   load_nets(c, nets);

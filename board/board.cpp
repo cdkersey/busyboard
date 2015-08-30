@@ -15,6 +15,8 @@
 
 using namespace std;
 
+namespace libpcb {
+
 enum errcode {
   ERR_MODE_SET, ERR_POINT_SET, ERR_APERTURE_SET
 };
@@ -808,7 +810,11 @@ typedef dip<8, 3, true> DIP16V;
 typedef dip<20, 6, false> DIP40;
 typedef dip<20, 6, true> DIP40V;
 
+};
+  
 int main() {
+  using namespace libpcb;
+
   net &vdd(*(new net("VDD"))), &gnd(*(new net("GND"))), &x(*(new net("X")));
 
   #if 1

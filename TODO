@@ -25,17 +25,36 @@ x Design PCB in kicad (with LVS(LVN really) in mind)
     _ Scalable Text (part numbers, etc)
       . Rendering engine
       _ Font (a-zA-Z0-9_)
-      _ Rotation
+      _ Rotation?
+    . Nets, wires, and net propagation.
+    . Net integrity check.
   - Draw PCB
-    - Proper DIP component
+    . Proper DIP component
       . Pins
-      _ Silkscreen outline with pin 1 mark.
+      . Silkscreen outline with pin 1 mark.
     - Tstrip component
     - Breadboard "component" with 0 pins
     - USB connector component
     - Centronics connector component
 - Order PCB from http://rushpcb.com/offers/SpecialNewCustomer.aspx
 - Write host software
+
+. Reorganize board.cpp into libpcb
+
+  1 class component => component.h
+  1 class gerber    => gerber.h
+  1 class drawable  => drawable.h
+  1 class font      => text.h
+  1 class text      => text.h
+  2 class net       => net.h
+  1 class pin       => pin.h
+  1 class via       => via.h
+  1 class pad       => via.h
+  1 class poly      => poly.h
+  1 class track     => track.h
+  1 struct point    => point.h
+  1 class dip       => basic.h
+  1 class twoprong  => basic.h
 
 BOM
 1x ED2982-ND "CONN USB TYPE B R/A WHITE"

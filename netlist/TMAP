@@ -1,0 +1,10 @@
+module<led> D
+module<tstrip> J
+module<usb_b> J
+module<r10ohm> R
+module<r1600ohm> R
+module<c1uF> C
+module<c100nF> C
+module<74hc4094> U
+module<74hc597> U
+module<centronics_parallel> J

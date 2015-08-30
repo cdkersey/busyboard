@@ -1,0 +1,10 @@
+74hc4094: U1 U2 U3 U4 U5 U6 U7
+74hc597: U10 U11 U12 U13 U8 U9
+c100nF: C10 C11 C12 C13 C14 C15 C16 C17 C5 C6 C7 C8 C9
+c1uF: C1 C2 C3 C4
+centronics_parallel: J3
+led: D1
+r10ohm: R1
+r1600ohm: R2
+tstrip: J2
+usb_b: J1

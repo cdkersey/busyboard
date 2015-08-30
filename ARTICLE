@@ -20,5 +20,12 @@ an external source of netlists had never even occurred to the original
 developers.
 
 As is clear from CHDL itself, what I do in these situations is create another,
-lighter-weight tool.
+lighter-weight tool that fits well with the workflows of open source hardware
+projects.
+
+Introducing libpcb
+------------------
+
+Building the Netlist in CHDL
+----------------------------
 

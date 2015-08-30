@@ -35,7 +35,7 @@ void libpcb::font::load(istream &in) {
     char c;
     in >> c;
     if (!in) break;
-    while (in.peek() != '\n') {
+    while (!!in && in.peek() != '\n') {
       double x, y;
       in >> x >> y;
       f[c].push_back(point(x, y));

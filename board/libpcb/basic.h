@@ -106,12 +106,12 @@ template <char X, unsigned L, bool V>
   new pad(p0, 0.08, 0.035);
   new pad(p1, 0.08, 0.035);
 
-  add_pin("0", p0);
-  add_pin("1", p1);
+  add_pin("1", p0);
+  add_pin("2", p1);
 
   new text(get_default_font(),
 	   LAYER_SILKSCREEN,
-	   p0 + (V ? point(0.1, 0.05): point(0.05, 0)),
+	   p0 + (V ? point(-0.1, 0.05): point(0.05, 0)),
 	   name,
 	   1/40.0);
 }

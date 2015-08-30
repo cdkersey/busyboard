@@ -11,7 +11,7 @@ BusyBoard - PC-connected digital electronics swiss army knife
   . Get basic desgin encoded
   . Get auxiliary design set up.
   _ Get simulation/validation working.
-  _ Get conversion to kicad format working.
+  x Get conversion to kicad format working.
 x Design PCB in kicad (with LVS(LVN really) in mind)
   - Nevermind, kicad is filth.
 - Design PCB in C++
@@ -21,7 +21,7 @@ x Design PCB in kicad (with LVS(LVN really) in mind)
     . Vias
     . Components
       . Pads
-    _ Planes
+    . Planes
     _ Scalable Text (part numbers, etc)
       . Rendering engine
       _ Font (a-zA-Z0-9_)
@@ -32,10 +32,13 @@ x Design PCB in kicad (with LVS(LVN really) in mind)
     . Proper DIP component
       . Pins
       . Silkscreen outline with pin 1 mark.
-    - Tstrip component
-    - Breadboard "component" with 0 pins
+    . Tstrip component
+    . Breadboard "component" with 0 pins
     - USB connector component
     - Centronics connector component
+    . Route power
+    _ Route signals.
+- Paper test PCB with BOM.
 - Order PCB from http://rushpcb.com/offers/SpecialNewCustomer.aspx
 - Write host software
 

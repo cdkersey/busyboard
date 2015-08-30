@@ -373,6 +373,7 @@ void make_board() {
     (new track(1, 0.01))-> // Bit 5
       add_point(i + 0.3, 0.3).add_point(i + 0.25, 0.25).
       add_point(i + 0.25, -0.15);
+    (new via(point(i + 0.25, -0.15), 0.06, 0.035));
     (new track(1, 0.01))-> // Bit 6
       add_point(i + 0.75, 0.25).add_point(i + 0.75, -0.15);
     (new track(1, 0.01))-> // Bit 7

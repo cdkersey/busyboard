@@ -388,6 +388,8 @@ void make_board() {
     (new track(1, 0.01))->
       add_point(0.3 + 0.1 * i, 0).add_point(0.3 + 0.1 * i,-0.35 - 0.025*i).
       add_point(0.1 * i,-0.35 - 0.025*i).add_point(0.1 * i,-0.6);
+  (new track(0, 0.01))->
+    add_point(.15, -.15).add_point(.15, -.5).add_point(.4,-.5).add_point(.4,-.6);
   
   map<string, net*> nets;
   load_nets(c, nets);

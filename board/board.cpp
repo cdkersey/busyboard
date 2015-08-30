@@ -210,17 +210,53 @@ void make_board() {
     (new via(point(i + 1.0, 1.3), 0.06, 0.035));
     
   }
-  (new track(0, 0.01))-> // Connect U7
+  (new track(0, 0.01))-> // Connect U7 to 29
     add_point(5.0, -0.05).add_point(6.5,-0.05);
   (new via(point(6.5, -0.05), 0.06, 0.035));
   (new track(1, 0.01))->
     add_point(6.5, -0.05).add_point(6.5, 0.5);
-  (new track(1, 0.01))-> // Connect upper to lower
+  (new track(1, 0.01))-> // Connect upper to lower net 29
     add_point(0,0).add_point(-0.05,0.05).add_point(-0.05,1.1);
   (new via(point(-0.05,1.1), 0.06, 0.035));
   (new track(0, 0.01))->
     add_point(-0.05,1.1).add_point(0.45, 1.1).
     add_point(0.45,1.25).add_point(0.9,1.25);
+  (new track(1, 0.01))-> // connect U7 to 20
+    add_point(6.7,0.5).add_point(6.65,0.55).add_point(6.65,0.85).
+    add_point(6.6,0.9).add_point(6.6,1.3);
+  (new via(point(6.6,1.3), 0.06, 0.035));
+  (new track(0, 0.01))->
+    add_point(6,1.3).add_point(6.6,1.3);
+  (new track(0, 0.01))-> // Connect upper to lower net 20
+    add_point(0.2,-0.1).add_point(-0.15,-0.1);
+  (new via(point(-0.15,-0.1), 0.06, 0.035));
+  (new track(1, 0.01))->
+    add_point(-0.15,-0.1).add_point(-0.15,1.15);
+  (new via(point(-0.15,1.15), 0.06, 0.035));
+  (new track(0, 0.01))->
+    add_point(-0.15,1.15).add_point(0.4,1.15).
+    add_point(0.4,1.3).add_point(1.0,1.3);
+
+  // Net 31/parallel load enable for input regs.
+  track *net31_upper = new track(0, 0.01);
+  for (unsigned i = 0; i < 6; ++i) {
+    (new track(1, 0.01))->
+      add_point(i + 0.8,1.05).add_point(i + 0.8,1.35);
+    (new via(point(i + 0.8, 1.35), 0.06, 0.035));
+    net31_upper->add_point(i + 0.8, 1.35);
+  }
+
+  // Output enable distribution
+  for (unsigned i = 1; i < 6; ++i) {
+    (new track(0, 0.01))->
+      add_point(i + 0.1,i*0.05 + 0.425).add_point(6.1, i*0.05 + 0.425);
+    (new via(point(i + 0.1, i*0.05 + 0.425), 0.06, 0.035));
+    (new track(1, 0.01))->
+      add_point(i + 0.1, i * 0.05 + 0.425).add_point(i + 0.1, 0.3);
+  }
+  (new track(1, 0.01))->add_point(0.1, 0.3).add_point(0.1, 1.4);
+  (new via(point(0.1, 1.4), 0.06, 0.035));
+  (new track(0, 0.01))->add_point(0.1, 1.4).add_point(6.1, 1.4);
   
   map<string, net*> nets;
   load_nets(c, nets);
@@ -228,7 +264,7 @@ void make_board() {
   wire::expand_nets();  
   wire::check_nets();
 
-  nets["20"]->mark();
+  nets["31"]->mark();
 }
 
 int main() {

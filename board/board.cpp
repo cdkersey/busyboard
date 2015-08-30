@@ -364,10 +364,26 @@ void make_board() {
     (new via(point(i + 0.5, 0.2), 0.06, 0.035));
     (new track(1, 0.01))->
       add_point(i + 0.5, 0.2).add_point(i + 0.5, 0.3);
-  }
 
-  // Connecting J2
+    // Breakouts for J2 connections
+    (new track(1, 0.01))-> // Bit 4
+      add_point(i + 0.2, 0.3).add_point(i + 0.15, 0.25).
+      add_point(i + 0.15, -0.15);
+    (new via(point(i + 0.15, -0.15), 0.06, 0.035));
+    (new track(1, 0.01))-> // Bit 5
+      add_point(i + 0.3, 0.3).add_point(i + 0.25, 0.25).
+      add_point(i + 0.25, -0.15);
+    (new track(1, 0.01))-> // Bit 6
+      add_point(i + 0.75, 0.25).add_point(i + 0.75, -0.15);
+    (new track(1, 0.01))-> // Bit 7
+      add_point(i + 0.8, 0.15).add_point(i + 0.8, -0.15);
+  }
   
+  // Connecting J2
+  for (unsigned i = 0; i < 4; ++i) // Bits 0 - 3
+    (new track(1, 0.01))->
+      add_point(0.3 + 0.1 * i, 0).add_point(0.3 + 0.1 * i,-0.35 - 0.025*i).
+      add_point(0.1 * i,-0.35 - 0.025*i).add_point(0.1 * i,-0.6);
   
   map<string, net*> nets;
   load_nets(c, nets);

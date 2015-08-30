@@ -181,7 +181,7 @@ void make_board() {
 
   // Bottom row carries.
   for (unsigned i = 0; i < 5; ++i) {
-    (new track(0, 0.01))->add_point(i + 0.7, 0.3).add_point(i + 0.7, 0.2);
+    (new track(1, 0.01))->add_point(i + 0.7, 0.3).add_point(i + 0.7, 0.2);
     (new via(point(i + 0.7, 0.2), 0.06, 0.035));
     (new track(0, 0.01))->add_point(i + 0.7, 0.2).add_point(i + 1.1, 0.2);
     (new track(1, 0.01))->add_point(i + 1.1, 0).add_point(i + 1.1, 0.2);
@@ -341,7 +341,7 @@ void make_board() {
       add_point(i + 0.3, 1.55).add_point(i + 0.85, 1.55);
 
     (new track(1, 0.01))-> // U8 6 to U1 12
-      add_point();
+      add_point(i + 0.4, 0.3);
 
     // (new track(1, 0.01))-> // U8 7 to U1 11
     //  add_point();

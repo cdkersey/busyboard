@@ -121,18 +121,31 @@ void make_board() {
   c["J2"] = new tstrip("J2", point(0, -0.6));
   place_breadboard(point(0, -2.9));
 
-  // Route ground
+  // Route vdd, gnd
   track *gnd_lower = new track(0, 1/20.0), *gnd_upper = new track(0, 1/20.0);
+  track *vdd_lower = new track(0, 1/20.0), *vdd_upper = new track(0, 1/20.0);
   for (unsigned i = 0; i < 6; ++i) {
     gnd_lower->add_point(i - 0.1, 0.1); // cap
     gnd_upper->add_point(i + 0.4, 0.85);
     gnd_lower->add_point(i + 0.7, 0.1); // IC ground pin
     gnd_upper->add_point(i + 1.2, 0.85);
+    vdd_lower->add_point(i, 0.4);
+    vdd_upper->add_point(i + 0.5, 1.15);
+    vdd_upper->add_point(i + 1.1, 1.15);
     
+    // Connect gnd
     (new track(0, 1/20.0))->add_point(i - 0.1, 0.1).add_point(i - 0.1, 0);
     (new track(0, 1/20.0))->add_point(i + 0.7, 0.1).add_point(i + 0.7, 0);
     (new track(0, 1/20.0))->add_point(i + 0.4, 0.85).add_point(i + 0.4, 0.75);
     (new track(0, 1/20.0))->add_point(i + 1.2, 0.85).add_point(i + 1.2, 0.75);
+
+    // Connect vdd
+    (new track(0, 1/20.0))->add_point(i + 0.4, 1.05).add_point(i + 0.5, 1.05);
+    (new track(0, 1/20.0))->add_point(i + 0.5, 1.15).add_point(i + 0.5, 1.05);
+    (new track(0, 1/20.0))->add_point(i, 0.4).add_point(i, 0.3);
+    (new track(0, 1/20.0))->add_point(i - 0.1, 0.3).add_point(i, 0.3);
+    (new track(0, 1/20.0))->add_point(i + 1.1, 1.15).add_point(i + 1.1, 1.05);
+    
   }
   (new track(0, 1/20.0))-> // Grounded input on U8
     add_point(0.4, 0.85).add_point(0.7, 0.85).add_point(0.7, 1.05);
@@ -150,7 +163,22 @@ void make_board() {
     add_point(6.4,0.6).add_point(7.2, 0.6).add_point(7.2,0.5);
   (new via(point(6.2,0.1), 0.08, 0.035));
   (new via(point(6.2,0.6), 0.08, 0.035));
-  
+  (new track(0, 1/20.0))-> // VDD connection to U7.
+    add_point(5.5,1.15).add_point(6.1,1.15).add_point(6.5,1.15);
+  (new via(point(6.5,1.15), 0.08, 0.035));
+  (new track(1, 1/20.0))->add_point(6.5,1.15).add_point(6.5,0.8);
+  (new track(0, 1/20.0))->
+    add_point(6.4,0.8).add_point(6.5,0.8).add_point(6.6,0.8);
+  (new track(1, 1/20.0))->add_point(0,0.3).add_point(0,1.05); // VDD to upper
+  (new via(point(0,1.05), 0.08, 0.035));
+  (new track(0, 1/20.0))->add_point(0,1.05).add_point(0.4,1.05);
+  (new track(1, 1/20.0))-> // VDD to tstrip
+    add_point(6.0,-0.6).add_point(6.0,0.4);
+  (new via(point(6.0,0.4), 0.08, 0.035));
+  (new track(0, 1/20.0))->add_point(6.0,0.4).add_point(5.0,0.4);
+  (new track(0, 1/20.0))->
+    add_point(5.9,-0.6).add_point(6.0,-0.6).add_point(6.1,-0.6);
+
   map<string, net*> nets;
   load_nets(c, nets);
 
@@ -167,9 +195,6 @@ int main() {
   
   // net::print_nets();
 
-  //gnd.mark();
-  //vdd.mark();
-  
   {
     ofstream gfile("dump.cu0.grb");
     gerber g(gfile);

@@ -10,6 +10,8 @@
 using namespace std;
 using namespace libpcb;
 
+const char *REVISION = "Version 0.0";
+
 class mech_hole : public drawable {
 public:
   mech_hole(point pos, double size): pos(pos), size(size) { add_priority(0); }
@@ -652,13 +654,33 @@ void make_board() {
   (new track(0, 0.01))->
     add_point(7.2, 1.1).add_point(7.15, 1.05).
     add_point(7.15, 0.55).add_point(7.2, 0.5);
+
+  // The artist's signature
+  new text(get_default_font(), LAYER_SILKSCREEN, point(6.35, -2.7 + 0.15*4),
+    "BUSYBOARD", 1.0/40
+  );
+  new text(get_default_font(), LAYER_SILKSCREEN, point(6.35, -2.7 + 0.15*3),
+    REVISION, 1.0/60
+  );
+  new text(get_default_font(), LAYER_SILKSCREEN, point(6.35, -2.7 + 0.15*2),
+    "Chad D. Kersey", 1.0/60
+  );
+  new text(get_default_font(), LAYER_SILKSCREEN, point(6.35, -2.7 + 0.15),
+    "made with CHDL", 1.0/60
+  );
+  new text(get_default_font(), LAYER_SILKSCREEN, point(6.35, -2.7),
+    "and libpcb", 1.0/60
+  );
+  
+
+  
   
   map<string, net*> nets;
   load_nets(c, nets);
 
   wire::expand_nets();  
   wire::check_nets();
-
+  
   // nets["gnd"]->mark();
 }
 

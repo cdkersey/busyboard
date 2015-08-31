@@ -208,6 +208,10 @@ void make_board() {
   c["C17"] = new Cl<3, true>("C17", point(5.4, 0.75));
   c["U13"] = new DIP16("U13", point(5.5, 0.75));
 
+  c["R1"] = new Cl<5, true>("R1", point(6.5, 1.45));
+  c["D1"] = new Cl<1, true>("D1", point(6.9, 1.2));
+  c["R2"] = new Cl<3, false>("R2", point(6.9, 1.1));
+  
   c["J1"] = new usb_b("J1", point(6.9, 1.5));
   c["J2"] = new tstrip("J2", point(0, -0.6));
   c["J3"] = new centronics("J3", point(0.4, 1.65));
@@ -273,11 +277,12 @@ void make_board() {
   (new track(0, 1/20.0))->add_point(6.0,0.4).add_point(5.0,0.4);
   (new track(0, 1/20.0))->
     add_point(5.9,-0.6).add_point(6.0,-0.6).add_point(6.1,-0.6);
-  (new track(0, 1/20.0))-> // Route vdd to connector area.
-    add_point(6.5, 1.15).add_point(6.9,1.15);
+  (new track(1, 1/20.0))-> // Route vdd to connector area.
+    add_point(6.5, 1.15).add_point(6.4,1.25).
+    add_point(6.4,1.85).add_point(6.5, 1.95);
   (new track(1, 1/20.0))-> // Route gnd to connector area.
     add_point(6.2, 0.6).add_point(6.3,0.7).
-    add_point(6.3,1.579).add_point(6.3,1.65);
+    add_point(6.3,1.579);
   (new via(point(6.3, 1.579), 0.06, 0.035));
   (new track(0, 1/20.0))-> // Route gnd to power connector
     add_point(6.3, 1.579).add_point(6.9, 1.579);
@@ -572,26 +577,58 @@ void make_board() {
   track *j3_gnd_1 = new track(0, 1/20.0), *j3_gnd_2 = new track(0, 1/20.0);
   for (unsigned i = 0; i < 12; ++i) // J3 pins 19-30: GND
     j3_gnd_1->add_point(0.4+i*0.085, 1.819);
-  (new track(1, 1/20.0))->add_point(1.335, 1.819).add_point(1.335, 1.65);
+  (new track(0, 1/20.0))->add_point(1.335, 1.819).add_point(1.335, 1.65);
   for (unsigned i = 0; i < 3; ++i) // J3 pins 11-13: GND
     j3_gnd_2->add_point(1.25+i*0.085, 1.65);
   (new track(0, 1/20.0))-> // J3 pins 16-17: GND
     add_point(1.675, 1.65).add_point(1.76, 1.65);
   (new track(0, 1/20.0))-> // J3 pins 32-33: GND
     add_point(1.505, 1.819).add_point(1.590, 1.819);
-  (new track(1, 1/20.0))->
+  (new track(0, 1/20.0))->
     add_point(1.42, 1.65).add_point(1.42, 1.7345).
     add_point(1.42 + 0.085, 1.7345).add_point(1.42 + 0.085, 1.819);
-  (new track(1, 1/20.0))->
+  (new track(0, 1/20.0))->
     add_point(1.42 + 2*0.085, 1.819).add_point(1.42 + 2*0.085, 1.7345).
     add_point(1.42 + 3*0.085, 1.7345).add_point(1.42 + 3*0.085, 1.65);
-  (new track(1, 1/20.0))->
-    add_point(1.42 + 3*0.085, 1.7345).add_point(6.3, 1.7345).
-    add_point(6.3, 1.65);
+  (new track(0, 1/20.0))->
+    add_point(1.42 + 3*0.085, 1.7345).add_point(2.1, 1.7345).
+    add_point(2.1, 1.9).add_point(6.3, 1.9).add_point(6.3, 1.579);
+  (new track(1, 0.01))-> // J3 pin 36 (net 31)
+    add_point(1.8, 1.35).add_point(1.8, 1.6).
+    add_point(0.4 + 0.085*16 + 0.085/2, 1.6).
+    add_point(0.4 + 0.085*16 + 0.085/2, 1.819 - 0.085/2).
+    add_point(0.4 + 0.085*17, 1.819);
+  (new track(0, 0.01))-> // J3 pin 14 (net 29)
+    add_point(0.9, 1.25).add_point(0.4 + 13*0.085, 1.25);
+  (new via(point(0.4 + 13*0.085, 1.25), 0.06, 0.035));
+  (new track(1, 0.01))->
+    add_point(0.4 + 13*0.085, 1.25).add_point(0.4 + 13*0.085, 1.65);
+  (new track(1, 0.01))-> // J3 pin 2 (net 21) -- Data in
+    add_point(0.1, 0).add_point(0.05, 0.05).add_point(0.05, 1.6);
+  (new via(point(0.05, 1.6), 0.06, 0.035));
+  (new track(0, 0.01))->
+    add_point(0.05, 1.6).add_point(0.4 + 0.085/2, 1.6).
+    add_point(0.4 + 0.085, 1.65);
+  (new via(point(0.4, 1.3), 0.06, 0.035)); // J3 pin 1 (net 20)
+  (new track(1, 0.01))->
+    add_point(0.4, 1.3).add_point(0.4, 1.65);
+  (new track(0, 0.01))-> // J3 pin 10 (net 19) -- Data out
+    add_point(0.4 + 9*0.085, 1.65).add_point(0.4 + 9.5*0.085, 1.60).
+    add_point(6.2, 1.60);
+  (new via(point(6.2, 1.6), 0.06, 0.035));
+  (new track(1, 0.01))->add_point(6.2, 1.60).add_point(6.2, 1.05);
   
-  // (new track(0, 0.01))-> // J3 pin 36 (ERROR)
-  //  add_point(1.8,1.35).add_point(1.9,1.35).
-  //  add_point(1.9,1.819).add_point(1.8450,1.819);
+  
+  // Connect J1, power circuitry
+  (new track(0, 1/20.0))->
+    add_point(6.9, 1.5).add_point(6.55, 1.5).add_point(6.5, 1.45);
+  (new track(0, 1/20.0))->
+    add_point(6.9, 1.5).add_point(6.9, 1.3);
+  (new track(0, 1/20.0))->
+    add_point(6.9, 1.2).add_point(6.9, 1.1);
+  (new track(0, 0.01))->
+    add_point(7.2, 1.1).add_point(7.15, 1.05).
+    add_point(7.15, 0.55).add_point(7.2, 0.5);
   
   map<string, net*> nets;
   load_nets(c, nets);
@@ -599,7 +636,7 @@ void make_board() {
   wire::expand_nets();  
   wire::check_nets();
 
-  nets["gnd"]->mark();
+  nets["19"]->mark();
 }
 
 int main() {

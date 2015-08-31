@@ -10,6 +10,96 @@
 using namespace std;
 using namespace libpcb;
 
+class mech_hole : public drawable {
+public:
+  mech_hole(point pos, double size): pos(pos), size(size) { add_priority(0); }
+  
+  void draw(int pri, layer l, gerber &g) {
+    if (pri == 0 && l == LAYER_NPTH) {
+      g.set_aperture(size);
+      g.set_dark();
+      g.move(pos);
+      g.flash();
+    }
+  }
+
+  point pos;
+  double size;
+};
+
+class centronics : public component {
+public:
+  centronics(string name, point pos);
+  std::string get_type_name() { return "J"; }
+};
+
+centronics::centronics(string name, point pos): component(name) {
+  point p(pos);
+
+  // Add the pins.
+  for (unsigned i = 0; i < 36; ++i) {
+    ostringstream oss;
+    oss << i + 1;
+    add_pin(oss.str(), p);
+    
+    new pad(p, 0.06, 0.035);
+    if (i == 17) p = pos + point(0, 0.169);
+    else         p += point(0.085, 0);
+  }
+
+  // Add the mechanical connections
+  point ps0(pos + point(-0.4535, 0.0845)), ps1(ps0 + point(2.352, 0));
+  new mech_hole(ps0, 0.126);
+  new mech_hole(ps1, 0.126);
+
+  // Add the silkscreen markings
+  point pr0(pos - point(0.611, 0.093)), pr1(pr0 + point(2.667, 0.595));
+  (new poly(LAYER_SILKSCREEN))->
+    add_point(pr0).add_point(point(pr0.x,pr1.y)).
+    add_point(pr1).add_point(point(pr1.x,pr0.y));
+
+  new text(get_default_font(), LAYER_SILKSCREEN, pr0 + point(0.2, 0.35),
+    "CENTRONICS 36 - " + name, 1.0/40
+  );
+}
+
+class usb_b : public component {
+public:
+  usb_b(string name, point pos);
+  std::string get_type_name() { return "J"; }
+};
+
+usb_b::usb_b(string name, point pos): component(name) {
+  point p(pos);
+
+  // Add the pins.
+  for (unsigned i = 0; i < 4; ++i) {
+    ostringstream oss;
+    oss << i + 1;
+    add_pin(oss.str(), p);
+    
+    new pad(p, 0.06, 0.035);
+    if (i == 1) p = p + point(0, 0.079);
+    else if (i < 1) p += point(0.098, 0);
+    else if (i > 1) p -= point(0.098, 0);
+  }
+
+  // Add the mechanical connections
+  point ps0(pos + point(-0.186, +0.188)), ps1(ps0 + point(0.474, 0));
+  new mech_hole(ps0, 0.092);
+  new mech_hole(ps1, 0.092);
+
+  // Add the silkscreen markings
+  point pr0(pos - point(0.189, 0.058)), pr1(pr0 + point(0.476, 0.650));
+  (new poly(LAYER_SILKSCREEN))->
+    add_point(pr0).add_point(point(pr0.x,pr1.y)).
+    add_point(pr1).add_point(point(pr1.x,pr0.y));
+
+  new text(get_default_font(), LAYER_SILKSCREEN, pr0 + point(0.15, 0.35),
+    name, 1.0/32
+  );
+}
+
 // Breadboard terminal strip. 6.5"x.43" with terminal strips 0.2" in from edges,
 // in 2 sets of 27 with a 0.9" gap in between. 
 class tstrip : public component {
@@ -117,8 +207,10 @@ void make_board() {
   c["U12"] = new DIP16("U12", point(4.5, 0.75));
   c["C17"] = new Cl<3, true>("C17", point(5.4, 0.75));
   c["U13"] = new DIP16("U13", point(5.5, 0.75));
-  
+
+  c["J1"] = new usb_b("J1", point(6.9, 1.5));
   c["J2"] = new tstrip("J2", point(0, -0.6));
+  c["J3"] = new centronics("J3", point(0.4, 1.65));
   place_breadboard(point(0, -2.9));
 
   // Route vdd, gnd
@@ -181,7 +273,15 @@ void make_board() {
   (new track(0, 1/20.0))->add_point(6.0,0.4).add_point(5.0,0.4);
   (new track(0, 1/20.0))->
     add_point(5.9,-0.6).add_point(6.0,-0.6).add_point(6.1,-0.6);
-
+  (new track(0, 1/20.0))-> // Route vdd to connector area.
+    add_point(6.5, 1.15).add_point(6.9,1.15);
+  (new track(1, 1/20.0))-> // Route gnd to connector area.
+    add_point(6.2, 0.6).add_point(6.3,0.7).
+    add_point(6.3,1.579).add_point(6.3,1.65);
+  (new via(point(6.3, 1.579), 0.06, 0.035));
+  (new track(0, 1/20.0))-> // Route gnd to power connector
+    add_point(6.3, 1.579).add_point(6.9, 1.579);
+  
   // Bottom row carries.
   for (unsigned i = 0; i < 5; ++i) {
     (new track(1, 0.01))->add_point(i + 0.7, 0.3).add_point(i + 0.7, 0.2);
@@ -410,11 +510,11 @@ void make_board() {
   (new track(0, 0.01))-> // Bit 15
     add_point(1.8, -.15).add_point(1.85,-.2).add_point(1.85,-.35).
     add_point(1.5,-.35).add_point(1.5,-.6);
-    for (unsigned i = 0; i < 4; ++i) // Bits 16 - 19
-      (new track(1, 0.01))->
-        add_point(2.3 + 0.1 * i, 0).add_point(2.3 + 0.1 * i,-0.35 - 0.025*i).
-        add_point(1.65 + 0.1 * i,-0.35 - 0.025*i).
-	add_point(1.65 + 0.1 * i,-0.55).add_point(1.6 + 0.1*i, -0.6);
+  for (unsigned i = 0; i < 4; ++i) // Bits 16 - 19
+    (new track(1, 0.01))->
+      add_point(2.3 + 0.1 * i, 0).add_point(2.3 + 0.1 * i,-0.35 - 0.025*i).
+      add_point(1.65 + 0.1 * i,-0.35 - 0.025*i).
+      add_point(1.65 + 0.1 * i,-0.55).add_point(1.6 + 0.1*i, -0.6);
   for (unsigned i = 0; i < 2; ++i) // Bits 20, 21
     (new track(0, 0.01))->
       add_point(2.15 + i*0.1, -.15).add_point(2.15 + i*0.1, -.2 - 0.025*i).
@@ -441,14 +541,65 @@ void make_board() {
   (new track(0, 0.01))-> // Bit 31
     add_point(3.8, -.15).add_point(3.85,-.2).add_point(3.85,-.35).
     add_point(3.9,-.35).add_point(3.9,-.6);
+  for (unsigned i = 0; i < 4; ++i) // Bits 32 - 35
+    (new track(1, 0.01))->
+      add_point(4.3 + 0.1 * i, 0).add_point(4.3 + 0.1 * i,-0.2 - 0.025*i).
+      add_point(4.0 + 0.1*i,-0.2 - 0.025*i).add_point(4.0 + 0.1*i,-0.6);
+  for (unsigned i = 0; i < 2; ++i) // Bits 36, 37
+    (new track(0, 0.01))->
+      add_point(4.15 + i*0.1, -.15).add_point(4.15 + i*0.1, -.25 + 0.025*i).
+      add_point(4.4 + i*0.1,-.25 + 0.025*i).add_point(4.4 + i*0.1,-.6);
+  (new track(0, 0.01))-> // Bit 38
+    add_point(4.8, -.3).add_point(4.6, -.3).add_point(4.6, -.6);
+  (new track(0, 0.01))-> // Bit 39
+    add_point(4.8, -.15).add_point(4.85,-.2).add_point(4.85,-.35).
+    add_point(4.7,-.35).add_point(4.7,-.6);
+  for (unsigned i = 0; i < 4; ++i) // Bits 40 - 43
+    (new track(1, 0.01))->
+      add_point(5.3 + 0.1 * i, 0).add_point(5.3 + 0.1 * i,-0.35 - 0.025*i).
+      add_point(4.8 + 0.1*i,-0.35 - 0.025*i).add_point(4.8 + 0.1*i,-0.6);
+  for (unsigned i = 0; i < 2; ++i) // Bits 44, 45
+    (new track(0, 0.01))->
+      add_point(5.15 + i*0.1, -.15).add_point(5.15 + i*0.1, -.25 + 0.025*i).
+      add_point(5.2 + i*0.1,-.25 + 0.025*i).add_point(5.2 + i*0.1,-.6);
+  (new track(0, 0.01))-> // Bit 46
+    add_point(5.8, -.3).add_point(5.4, -.3).add_point(5.4, -.6);
+  (new track(0, 0.01))-> // Bit 47
+    add_point(5.8, -.15).add_point(5.85,-.2).add_point(5.85,-.35).
+    add_point(5.5,-.35).add_point(5.5,-.6);
 
+  // Connect J3
+  track *j3_gnd_1 = new track(0, 1/20.0), *j3_gnd_2 = new track(0, 1/20.0);
+  for (unsigned i = 0; i < 12; ++i) // J3 pins 19-30: GND
+    j3_gnd_1->add_point(0.4+i*0.085, 1.819);
+  (new track(1, 1/20.0))->add_point(1.335, 1.819).add_point(1.335, 1.65);
+  for (unsigned i = 0; i < 3; ++i) // J3 pins 11-13: GND
+    j3_gnd_2->add_point(1.25+i*0.085, 1.65);
+  (new track(0, 1/20.0))-> // J3 pins 16-17: GND
+    add_point(1.675, 1.65).add_point(1.76, 1.65);
+  (new track(0, 1/20.0))-> // J3 pins 32-33: GND
+    add_point(1.505, 1.819).add_point(1.590, 1.819);
+  (new track(1, 1/20.0))->
+    add_point(1.42, 1.65).add_point(1.42, 1.7345).
+    add_point(1.42 + 0.085, 1.7345).add_point(1.42 + 0.085, 1.819);
+  (new track(1, 1/20.0))->
+    add_point(1.42 + 2*0.085, 1.819).add_point(1.42 + 2*0.085, 1.7345).
+    add_point(1.42 + 3*0.085, 1.7345).add_point(1.42 + 3*0.085, 1.65);
+  (new track(1, 1/20.0))->
+    add_point(1.42 + 3*0.085, 1.7345).add_point(6.3, 1.7345).
+    add_point(6.3, 1.65);
+  
+  // (new track(0, 0.01))-> // J3 pin 36 (ERROR)
+  //  add_point(1.8,1.35).add_point(1.9,1.35).
+  //  add_point(1.9,1.819).add_point(1.8450,1.819);
+  
   map<string, net*> nets;
   load_nets(c, nets);
 
   wire::expand_nets();  
   wire::check_nets();
 
-  nets["31"]->mark();
+  nets["gnd"]->mark();
 }
 
 int main() {
@@ -492,6 +643,12 @@ int main() {
     ofstream gfile("dump.pth.grb");
     gerber g(gfile);
     drawable::draw_layer(LAYER_PTH, g);
+  }
+
+  {
+    ofstream gfile("dump.npth.grb");
+    gerber g(gfile);
+    drawable::draw_layer(LAYER_NPTH, g);
   }
 
   return 0;

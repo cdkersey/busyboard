@@ -14,7 +14,7 @@ BusyBoard - PC-connected digital electronics swiss army knife
   x Get conversion to kicad format working.
 x Design PCB in kicad (with LVS(LVN really) in mind)
   - Nevermind, kicad is filth.
-- Design PCB in C++
+. Design PCB in C++
   - Get CAD environment set up.
     . Tracks
     . A proper way to prioritize drawables to get proper clearance.
@@ -34,11 +34,12 @@ x Design PCB in kicad (with LVS(LVN really) in mind)
       . Silkscreen outline with pin 1 mark.
     . Tstrip component
     . Breadboard "component" with 0 pins
-    - USB connector component
-    - Centronics connector component
+    . USB connector component
+    . Centronics connector component
     . Route power
-    _ Route signals.
+    . Route signals.
 - Paper test PCB with BOM.
+- Visually verify PCB nets
 - Order PCB from http://rushpcb.com/offers/SpecialNewCustomer.aspx
 - Write host software
 

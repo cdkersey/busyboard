@@ -7,6 +7,23 @@ pieces of them, sure, but when it comes to actually representing designs in
 human-and-machine-readable fashion, I find schematics to be intrinsically
 inferior to easily-customizable textual representations.
 
+The Project
+-----------
+
+This project has its genesis in an EEPROM programmer design I wirewrapped up
+around 2004 or so, using three 74LS191 up/down counters to control the address
+lines of a 28c64 EEPROM attached to the parallel port. The design was very
+simple, only programming and verifying a single type of EEPROM. I decided that
+if I ever built this kind of device again, I would use shift registers instead
+of counters, to allow more functions and wider support for EEPROMS and other
+memory devices. Now, over a decade later, that I have finally committed to
+building this kind of device, I have decided to make it as universal as
+possible, supporting not only the programming and reading of various ROM
+devices, but also general use as a GPIO interface, with a large number of
+signals and a prototyping area. This finally morphed into the design I
+ultimately built, which I call the Busyboard, a PC-connected digital
+Swiss Army knife.
+
 Nixing KiCad
 ------------
 
@@ -21,7 +38,9 @@ developers.
 
 As is clear from CHDL itself, what I do in these situations is create another,
 lighter-weight tool that fits well with the workflows of open source hardware
-projects.
+projects. Call it NIH<link: not invented here> if you will; I call it DIY
+<link: do it yourself ethic>. And what is open source hardware without the DIY
+ethic?
 
 Introducing libpcb
 ------------------
@@ -32,6 +51,17 @@ Building the Netlist in CHDL
 Routing the PCB Manually with libpcb
 ------------------------------------
 
+With the library taken care of, now it was time to actually place and route the
+design by hand.
+
 Paper Test
 ----------
+
+Since all of the device footprints were entered manually from technical
+drawings, having the components fit was a concern. To alleviate my worries, I
+did a simple check against a full scale printout of the board, inserting the
+component pins through the paper to check for any dimension issues.
+
+Visual Inspection
+-----------------
 

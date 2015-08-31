@@ -179,6 +179,11 @@ void load_nets(map<string, component*> &c, map<string, net*> &nets) {
 void make_board() {
   map<string, component*> c;
 
+  c["C1"] = new Cl<1, false, true>("C1", point(6.0, 0.15));
+  c["C2"] = new Cl<1, true, true>("C2", point(0.9, 0.4));
+  c["C3"] = new Cl<1, false, false>("C3", point(6.3, 1.7));
+  c["C4"] = new Cl<1, true, true>("C4", point(0.175, 0.4));
+  
   c["C5"] = new Cl<3, true>("C5", point(-0.1, 0));
   c["U1"] = new DIP16("U1", point(0, 0));
   c["C6"] = new Cl<3, true>("C6", point(0.9, 0));
@@ -286,6 +291,24 @@ void make_board() {
   (new via(point(6.3, 1.579), 0.06, 0.035));
   (new track(0, 1/20.0))-> // Route gnd to power connector
     add_point(6.3, 1.579).add_point(6.9, 1.579);
+
+  // Connections for C1-C4 bypass caps
+  (new track(1, 1/20.0))->
+    add_point(6, 0.4).add_point(6, 0.15);
+  (new track(1, 1/20.0))->
+    add_point(6.1, 0.15).add_point(6.2, 0.15).add_point(6.2, 0);
+  (new track(0, 1/20.0))->
+    add_point(1, .4).add_point(.9, .4);
+  (new track(0, 1/20.0))->
+    add_point(1.2, 0.75).add_point(0.95, .50).add_point(0.9, 0.5);
+  (new track(0, 1/20.0))->
+    add_point(6.3, 1.9).add_point(6.3, 1.7);
+  (new track(1, 1/20.0))->
+    add_point(6.5, 1.95).add_point(6.4, 1.85).add_point(6.4, 1.7);
+  (new track(0, 1/20.0))->
+    add_point(0.4, 0.75).add_point(0.175, 0.525).add_point(0.175, 0.5);
+  (new track(0, 1/20.0))->
+    add_point(0, 0.4).add_point(0.175,0.4);
   
   // Bottom row carries.
   for (unsigned i = 0; i < 5; ++i) {
@@ -636,7 +659,7 @@ void make_board() {
   wire::expand_nets();  
   wire::check_nets();
 
-  nets["19"]->mark();
+  // nets["gnd"]->mark();
 }
 
 int main() {

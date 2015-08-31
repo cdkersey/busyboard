@@ -20,7 +20,7 @@ public:
 };
 
 // Variable-width 2-prong component
-template <char X, unsigned L, bool V = false>
+template <char X, unsigned L, bool V = false, bool R = false>
   class twoprong : public component
 {
 public:
@@ -30,10 +30,14 @@ public:
 
 // Some nice, basic typedefs.
 
-template <unsigned L, bool V = false> using Ll = twoprong<'L', L, V>;
-template <unsigned L, bool V = false> using Cl = twoprong<'C', L, V>;
-template <unsigned L, bool V = false> using Rl = twoprong<'R', L, V>;
-template <unsigned L, bool V = false> using Dl = twoprong<'D', L, V>;
+template <unsigned L, bool V = false, bool R = false>
+  using Ll = twoprong<'L', L, V, R>;
+template <unsigned L, bool V = false, bool R = false>
+  using Cl = twoprong<'C', L, V, R>;
+template <unsigned L, bool V = false, bool R = false>
+  using Rl = twoprong<'R', L, V, R>;
+template <unsigned L, bool V = false, bool R = false>
+  using Dl = twoprong<'D', L, V, R>;
 
 typedef Rl<6> R6;
 typedef Rl<3> R3;
@@ -96,8 +100,9 @@ template <unsigned L, unsigned W, bool V>
   
 }
 
-template <char X, unsigned L, bool V>
-  libpcb::twoprong<X,L,V>::twoprong(std::string name, point p0): component(name)
+template <char X, unsigned L, bool V, bool R>
+  libpcb::twoprong<X,L,V,R>::twoprong(std::string name, point p0):
+  component(name)
 {
   using namespace std;
   
@@ -106,8 +111,8 @@ template <char X, unsigned L, bool V>
   new pad(p0, 0.06, 0.035);
   new pad(p1, 0.06, 0.035);
 
-  add_pin("1", p0);
-  add_pin("2", p1);
+  add_pin((R?"2":"1"), p0);
+  add_pin((R?"1":"2"), p1);
 
   new text(get_default_font(),
 	   LAYER_SILKSCREEN,

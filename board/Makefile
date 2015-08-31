@@ -4,4 +4,4 @@ LDLIBS = -lpcb
 board: board.cpp
 
 clean:
-	$(RM) board
+	$(RM) board dump.*.grb

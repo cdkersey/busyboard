@@ -40,6 +40,13 @@ x Design PCB in kicad (with LVS(LVN really) in mind)
     . Route signals.
 - Paper test PCB with BOM.
 - Visually verify PCB nets
+  . Centronics connector
+  . USB connector.
+  - u1  - u2  - u3
+  - u4  - u5  - u6
+  - u7  - u8  - u9
+  - u10 - u11 - u12
+  - u13 - u14
 - Order PCB from http://rushpcb.com/offers/SpecialNewCustomer.aspx
 - Write host software
 

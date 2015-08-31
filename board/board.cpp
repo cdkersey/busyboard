@@ -424,7 +424,24 @@ void make_board() {
   (new track(0, 0.01))-> // Bit 23
     add_point(2.8, -.15).add_point(2.85,-.2).add_point(2.85,-.35).
     add_point(2.3,-.35).add_point(2.3,-.6);
-    
+  for (unsigned i = 0; i < 3; ++i) // Bits 24 - 26
+    (new track(1, 0.01))->
+      add_point(3.3 + 0.1 * i, 0).add_point(3.3 + 0.1 * i,-0.45 - 0.025*i).
+      add_point(2.4 + 0.1 * i,-0.45 - 0.025*i).add_point(2.4 + 0.1*i, -0.6);
+  (new track(1, 0.01))-> // Bit 27
+    add_point(3.6, 0).add_point(3.55, -0.05).
+    add_point(3.55,-.55).add_point(3.5,-.6);
+  (new track(0, 0.01))-> // Bit 28
+    add_point(3.15, -.15).add_point(3.15, -.20).
+    add_point(3.6, -.20).add_point(3.6,-.6);
+  (new track(0, 0.01))-> // Bit 29
+    add_point(3.25, -.15).add_point(3.7, -.15).add_point(3.7, -.6);
+  (new track(0, 0.01))-> // Bit 30
+    add_point(3.8, -.3).add_point(3.8, -.6);
+  (new track(0, 0.01))-> // Bit 31
+    add_point(3.8, -.15).add_point(3.85,-.2).add_point(3.85,-.35).
+    add_point(3.9,-.35).add_point(3.9,-.6);
+
   map<string, net*> nets;
   load_nets(c, nets);
 

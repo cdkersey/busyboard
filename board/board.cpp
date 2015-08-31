@@ -51,8 +51,13 @@ centronics::centronics(string name, point pos): component(name) {
 
   // Add the mechanical connections
   point ps0(pos + point(-0.4535, 0.0845)), ps1(ps0 + point(2.352, 0));
+  #ifdef NPTH
   new mech_hole(ps0, 0.126);
   new mech_hole(ps1, 0.126);
+  #else
+  new via(ps0, 0.140, 0.126);
+  new via(ps1, 0.140, 0.126);
+  #endif
 
   // Add the silkscreen markings
   point pr0(pos - point(0.611, 0.093)), pr1(pr0 + point(2.667, 0.595));
@@ -88,8 +93,13 @@ usb_b::usb_b(string name, point pos): component(name) {
 
   // Add the mechanical connections
   point ps0(pos + point(-0.186, +0.188)), ps1(ps0 + point(0.474, 0));
+  #ifdef NPTH
   new mech_hole(ps0, 0.092);
   new mech_hole(ps1, 0.092);
+  #else
+  new via(ps0, 0.102, 0.092);
+  new via(ps1, 0.102, 0.092);
+  #endif
 
   // Add the silkscreen markings
   point pr0(pos - point(0.189, 0.058)), pr1(pr0 + point(0.476, 0.650));
@@ -727,7 +737,7 @@ int main() {
     drawable::draw_layer(LAYER_PTH, g);
   }
 
-  {
+  if (0) {
     ofstream gfile("dump.npth.grb");
     gerber g(gfile);
     drawable::draw_layer(LAYER_NPTH, g);

@@ -15,7 +15,7 @@ point libpcb::font::draw_char(gerber &g, char c, point p, double scale) const {
 
   double width = 0;
   g.set_dark();
-  g.set_aperture(scale/5.0);
+  g.set_aperture(scale/2.5);
   for (unsigned i = 0; i < v.size(); i += 2) {
     if (v[i] != v[i+1])
       g.draw(p + v[i].scale(scale), p + v[i+1].scale(scale));

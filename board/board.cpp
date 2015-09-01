@@ -55,8 +55,8 @@ centronics::centronics(string name, point pos): component(name) {
   new mech_hole(ps0, 0.126);
   new mech_hole(ps1, 0.126);
   #else
-  new via(ps0, 0.140, 0.126);
-  new via(ps1, 0.140, 0.126);
+  new pad(ps0, 0.140, 0.126);
+  new pad(ps1, 0.140, 0.126);
   #endif
 
   // Add the silkscreen markings
@@ -97,8 +97,8 @@ usb_b::usb_b(string name, point pos): component(name) {
   new mech_hole(ps0, 0.092);
   new mech_hole(ps1, 0.092);
   #else
-  new via(ps0, 0.102, 0.092);
-  new via(ps1, 0.102, 0.092);
+  new pad(ps0, 0.106, 0.092);
+  new pad(ps1, 0.106, 0.092);
   #endif
 
   // Add the silkscreen markings

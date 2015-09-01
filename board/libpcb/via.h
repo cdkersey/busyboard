@@ -6,6 +6,8 @@
 
 namespace libpcb {
 
+const double SOLDER_MASK_CLEARANCE = 0.006;
+  
 // Non-buried (all-layers) via.
 class via : public drawable, public wire {
 public:

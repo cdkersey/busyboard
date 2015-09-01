@@ -28,7 +28,7 @@ void libpcb::pad::draw(int pri, layer l, gerber &g) {
 
   if (pri == 0 && (top && l == LAYER_MASK1) || (!top && l == LAYER_MASK0)) {
     g.set_dark();
-    g.set_aperture(outer);
+    g.set_aperture(outer + SOLDER_MASK_CLEARANCE);
     g.flash(center);
   }
 }

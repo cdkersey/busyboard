@@ -1,18 +1,5 @@
 /* Busyboard control program/library */
 
-/*
-    bvec<8> lptdata;
-    in_data = lptdata[0];
-    Centronics(clock, lptdata, latch_out, latch_in, nload_out,
-	       out_data, Lit(0), Lit(0), Lit(0), Lit(0));
-
-  node &nstrobe, bvec<8> &data, node &nlf, node &nreset, node &nsel_prn,
-  node nack, node nbusy, node paperout, node sel, node err
-*/
-
-// PARPORT_CONTROL_STROBE AUTOFD INIT SELECT
-
-
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,7 +25,7 @@ void busyboard_in(struct busyboard *b);
 int open_parport(const char *devnode); /* Open and init parallel port. */
 void close_parport(int fd);
 
-enum ppbit { BIT_STROBE, BIT_DATA, BIT_LATCH_OUT, BIT_LATCH_IN };
+enum ppbit { BIT_STROBE, BIT_DATA, BIT_LATCH_OUT, BIT_LATCH_IN, BIT_N_LD_IN };
 const char *ppbit_name[] = {
   "BIT_STROBE", "BIT_DATA", "BIT_LATCH_OUT", "BIT_LATCH_IN"
 };
@@ -66,6 +53,12 @@ void init_busyboard(struct busyboard *b, const char *devnode) {
   b->trimask = 0;
 
   for (i = 0; i < N_PORTS; ++i) b->out_state[i] = 0;
+
+  set_bit(b->fd, BIT_DATA, 0);
+  set_bit(b->fd, BIT_LATCH_OUT, 0);
+  set_bit(b->fd, BIT_LATCH_IN, 0);
+  set_bit(b->fd, BIT_STROBE, 0);
+  set_bit(b->fd, BIT_N_LD_IN, 1);
 }
 
 int open_parport(const char *devnode) {
@@ -122,12 +115,15 @@ void busyboard_in(struct busyboard *b) {
   set_bit(b->fd, BIT_LATCH_IN, 1);
   set_bit(b->fd, BIT_LATCH_IN, 0);
 
+  // Transfer all of the strobed-in inputs to the shift register
+  set_bit(b->fd, BIT_N_LD_IN);
+
   // Read in the data bits.
   for (i = 0; i < N_PORTS; ++i) {
     for (j = 0; j < 8; ++j) {
       int bit = read_data(b->fd);
       set_bit(b->fd, BIT_DATA, bit);
-      b->in_state[i] |= bit << j;
+      b->in_state[N_PORTS - i] |= bit << (7 - j);
 
       set_bit(b->fd, BIT_STROBE, 1);
       set_bit(b->fd, BIT_STROBE, 0);
@@ -137,8 +133,18 @@ void busyboard_in(struct busyboard *b) {
 
 void set_bit(int fd, int bit, int val) {
   printf("Set bit %s to %d\n", ppbit_name[bit], val);
+
+  /* Control bits:
+       PARPORT_CONTROL_STROBE, !BIT_STROBE
+       PARPORT_CONTROL_AUTOFD, !BIT_LATCH_OUT
+       PARPORT_CONTROL_INIT, !BIT_LATCH_IN
+       PARPORT_CONTROL_SELECT, !BIT_N_LOAD_IN
+  */
+
 }
 
 int read_data(int fd) {
+  /* Read data from PARPORT_STATUS_ACK; invert */
+
   return 0;
 }

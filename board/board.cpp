@@ -3,6 +3,8 @@
 // attempt to make something a little less bad. If you get it, you get it. If
 // not, please tell me what I'm doing wrong.
 
+// 7.8 x 5.25 inches
+
 #include <libpcb/basic.h>
 #include <libpcb/track.h>
 #include <libpcb/component.h>
@@ -138,8 +140,8 @@ tstrip::tstrip(string name, point pos): component(name) {
   // Outline
   (new poly(LAYER_SILKSCREEN))->
     add_point(pos + point(-0.2, -0.1)).
-    add_point(pos + point(-0.2, 0.33)).
-    add_point(pos + point(6.3, 0.33)).
+    add_point(pos + point(-0.2, 0.53)).
+    add_point(pos + point(6.3, 0.53)).
     add_point(pos + point(6.3, -0.1));
 
   // Label
@@ -682,8 +684,10 @@ void make_board() {
     "and libpcb", 1.0/60
   );
   
-
-  
+  // The board outline
+  (new poly(LAYER_ROUTE, 0.035))->
+    add_point(-.4, -3.05).add_point(-.4, 2.2).
+    add_point(7.4, 2.2).add_point(7.4, -3.05);
   
   map<string, net*> nets;
   load_nets(c, nets);
@@ -741,6 +745,12 @@ int main() {
     ofstream gfile("dump.npth.grb");
     gerber g(gfile);
     drawable::draw_layer(LAYER_NPTH, g);
+  }
+
+  {
+    ofstream gfile("dump.route.grb");
+    gerber g(gfile);
+    drawable::draw_layer(LAYER_ROUTE, g);
   }
 
   return 0;

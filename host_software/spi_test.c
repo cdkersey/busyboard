@@ -4,15 +4,11 @@
 #include "busyboard.h"
 
 /* SPI test: pinout
-     A0 - CLK
-     A1 - MOSI (master->slave data)
-     A2 - CS0
-     A3 - CS1
-     A4 - CS2
-     A5 - CS3
-     A6 - CS4
-     A7 - CS5
+     A0 - CLK     A1 - MOSI (master->slave data)     A2 - CS0     A3 - CS1
+     A4 - CS2     A5 - CS3                           A6 - CS4     A7 - CS5
      B0 - MISO (slave->master data)
+
+     This allows support for up to 6 SPI devices on the same bus.
 */
 
 void do_delay() {

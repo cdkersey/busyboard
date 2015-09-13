@@ -1,11 +1,12 @@
-APPS = scope pov_test
+APPS = scope pov_test spi_test
 
 all: $(APPS)
 
-scope: scope.c busyboard.o
-pov_test : pov_test.c busyboard.o
+scope: scope.o busyboard.o
+pov_test : pov_test.o busyboard.o
+spi_test: spi_test.o busyboard.o
 
 busyboard.o: busyboard.c
 
 clean:
-	$(RM) $(APPS) busyboard.o *~
+	$(RM) $(APPS) *.o *~

@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
       for (j = 0; j < 8; j++)
         printf("%d", (bb.in_state[i]>>j)&1);
     putc('\n', stdout);
-    //usleep(1000);
+    usleep(10000);
   }
   
   close_busyboard(&bb);

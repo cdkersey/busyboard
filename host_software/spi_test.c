@@ -184,13 +184,13 @@ int main(int argc, char **argv) {
   srand(RSEED);
   
   int i;
-  for (i = 0; i < (1<<17); i++)
+  for (i = 0; i < (1<<8); i++)
     spi_sram_write(&bb, 0, i, rand() & 0xff);
 
   srand(RSEED);
 
   int count = 0;
-  for (i = 0; i < (1<<17); i++) {
+  for (i = 0; i < (1<<8); i++) {
     int x = spi_sram_read(&bb, 0, i);
     printf("%x: %x\n", i, x);
     if (x == (rand() & 0xff)) ++count;

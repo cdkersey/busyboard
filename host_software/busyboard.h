@@ -13,6 +13,8 @@ struct busyboard {
                 in_state[BUSYBOARD_N_PORTS];
 };
 
+typedef struct busyboard busyboard_t;
+
 void init_busyboard(struct busyboard *b, const char *devnode);
 void close_busyboard(struct busyboard *b);
 

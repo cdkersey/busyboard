@@ -23,7 +23,7 @@ int main() {
            "ABCDEFGHIJKLMNOPQRSTUVWXYZzyxwvutsrqponmlkjihgfedcba",
            1.0/32);
 
-  ofstream gfile("dump.ss.grb");
+  ofstream gfile("text.ss.grb");
   gerber g(gfile);
   drawable::draw_layer(LAYER_SILKSCREEN, g);
 

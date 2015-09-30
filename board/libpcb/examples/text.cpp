@@ -9,8 +9,6 @@ using namespace std;
 using namespace libpcb;
 
 int main() {
-  using namespace libpcb;
-
   new text(get_default_font(), LAYER_SILKSCREEN, point(-2, 0),
 	   "The quick brown fox jumps over the lazy dog.",
 	   1.0/32);

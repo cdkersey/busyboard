@@ -1,6 +1,8 @@
 #ifndef BUSYBOARD_H
 #define BUSYBOARD_H
 
+#include <unistd.h>
+
 /* Busyboard control program/library */
 
 /* Busyboard control structure. */

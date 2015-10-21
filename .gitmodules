@@ -1,0 +1,3 @@
+[submodule "board/libpcb"]
+	path = board/libpcb
+	url = https://github.com/cdkersey/libpcb

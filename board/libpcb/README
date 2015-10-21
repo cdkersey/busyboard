@@ -1,8 +1,0 @@
-libpcb - A PCB layout library in C++
-====================================
-
-libpcb is a C++ library for laying out printed circuit boards. It is a
-low-level library intended to be used for output and verification by
-higher-level CAD utilities. It can also be used stand-alone for producing PCB
-layouts from C++ source code. This allows the layout to be stored in source
-control in a compact human-readable format.

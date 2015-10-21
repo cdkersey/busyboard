@@ -7,28 +7,28 @@ BusyBoard - PC-connected digital electronics swiss army knife
   - Parallel port card
   - Parallel port cable
   - USB to parallel port cable (for fun)
-- Finalize netlist using CHDL, etc.
+. Finalize netlist using CHDL, etc.
   . Get basic desgin encoded
   . Get auxiliary design set up.
-  _ Get simulation/validation working.
+  x Get simulation/validation working.
   x Get conversion to kicad format working.
 x Design PCB in kicad (with LVS(LVN really) in mind)
   - Nevermind, kicad is filth.
 . Design PCB in C++
-  - Get CAD environment set up.
+  . Get CAD environment set up.
     . Tracks
     . A proper way to prioritize drawables to get proper clearance.
     . Vias
     . Components
       . Pads
     . Planes
-    _ Scalable Text (part numbers, etc)
+    . Scalable Text (part numbers, etc)
       . Rendering engine
-      _ Font (a-zA-Z0-9_)
-      _ Rotation?
+      . Font (a-zA-Z0-9_)
+      x Rotation?
     . Nets, wires, and net propagation.
     . Net integrity check.
-  - Draw PCB
+  . Draw PCB
     . Proper DIP component
       . Pins
       . Silkscreen outline with pin 1 mark.
@@ -38,17 +38,17 @@ x Design PCB in kicad (with LVS(LVN really) in mind)
     . Centronics connector component
     . Route power
     . Route signals.
-- Paper test PCB with BOM.
-- Visually verify PCB nets
+. Paper test PCB with BOM.
+. Visually verify PCB nets
   . Centronics connector
   . USB connector.
-  - u1  - u2  - u3
-  - u4  - u5  - u6
-  - u7  - u8  - u9
-  - u10 - u11 - u12
-  - u13 - u14
-- Order PCB from http://rushpcb.com/offers/SpecialNewCustomer.aspx
-- Write host software
+  . u1  . u2  . u3
+  . u4  . u5  . u6
+  . u7  . u8  . u9
+  . u10 . u11 . u12
+  . u13 . u14
+. Order PCB
+. Write host software
 
 . Reorganize board.cpp into libpcb
 

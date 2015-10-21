@@ -1,10 +1,10 @@
-/* z80 CPU test. */
+/* 65c02 CPU test. */
 /* Ports:
-    A0: {clk, #int, #nmi, #reset, #busreq, #wait} O (busyboard->z80)
+    A - {phi2, #irq, #nmi, #res, be, ready, #so} O (busyboard->65c02)
     B - Data (I/O)
-    C - Address[7:0] I (z80->busyboard)
-    D - Address[15:8] I (z80->busyboard)
-    E - {#mreq, #iorq, #halt, #rfsh, #busack, #rd, #wr, #m1} O (z80->busyboard)
+    C - Address[7:0] I (65c02->busyboard)
+    D - Address[15:8] I (65c02->busyboard)
+    E - {#ml, sync, #rw, #vp} I (65c02->busyboard)
 */
 
 #include <stdio.h>
@@ -48,7 +48,7 @@ void deassert_reset(busyboard_t *bb) {
   do_delay();
 }
 
-void z80_init(busyboard_t *bb) {
+void cpu_init(busyboard_t *bb) {
   int i;
   
   bb->out_state[0] = ~1; // clk clear, inverted control signals de-asserted
@@ -61,29 +61,25 @@ void z80_init(busyboard_t *bb) {
   deassert_reset(bb); // Now we're ready to go.
 }
 
-int z80_get_addr(busyboard_t *bb) {
+int cpu_get_addr(busyboard_t *bb) {
   busyboard_in(bb);
   return (bb->in_state[3]<<8) | bb->in_state[2];
 }
 
-enum z80_status {
-  Z80_STATUS_MREQ = 0x01,
-  Z80_STATUS_IORQ = 0x02,
-  Z80_STATUS_HALT = 0x04,
-  Z80_STATUS_RFRSH = 0x08,
-  Z80_STATUS_BUSACK = 0x10,
-  Z80_STATUS_RD = 0x20,
-  Z80_STATUS_WR = 0x40,
-  Z80_STATUS_M1 = 0x80
+enum cpu_status {
+  STATUS_ML = 0x01,
+  STATUS_SYNC = 0x02,
+  STATUS_WR = 0x04,
+  STATUS_VP = 0x08
 };
 
-const char *z80_status_str[] = {
-  "mreq", "iorq", "halt", "rfrsh", "busack", "rd", "wr", "m1"
+const char *cpu_status_str[] = {
+  "ml", "sync", "wr", "vp"
 };
 
-int z80_get_status(busyboard_t *bb) {
+int cpu_get_status(busyboard_t *bb) {
   busyboard_in(bb);
-  return ~bb->in_state[4];
+  return bb->in_state[4] ^ 0xd;
 }
 
 void print_data_bus(busyboard_t *bb) {
@@ -97,22 +93,22 @@ void print_data_bus(busyboard_t *bb) {
 }
 
 void print_bus_status(busyboard_t *bb) {
-  int i, addr = z80_get_addr(bb), status = z80_get_status(bb);
+  int i, addr = cpu_get_addr(bb), status = cpu_get_status(bb);
   printf("addr: %04x", addr);
   print_data_bus(bb);
-  for (i = 0; i < 8; i++) if ((status >> i)&1) printf(" %s", z80_status_str[i]);
+  for (i = 0; i < 4; i++) if ((status >> i)&1) printf(" %s", cpu_status_str[i]);
   putc('\n', stdout);
 }
 
 unsigned char mem[0x10000];
 
-void load_hex(const char *filename) {
+void load_hex(int base, const char *filename) {
   FILE *f = fopen(filename, "r");
   int i = 0;
   while (!feof(f)) {
     unsigned int val;
     fscanf(f, "%x\n", &val);
-    mem[i++] = val;
+    mem[base + i++] = val;
   }
   printf("Initialized memory from %s with %d bytes.\n", filename, i);
 }
@@ -132,28 +128,20 @@ void dump_hex() {
   }
 }
 
-void z80_emulate_cyc(busyboard_t *bb) {
-  int addr = z80_get_addr(bb), status = z80_get_status(bb);
+void cpu_emulate_cyc(busyboard_t *bb) {
+  int addr = cpu_get_addr(bb), status = cpu_get_status(bb);
 
-  if (status & Z80_STATUS_RD) {
-    if (status & Z80_STATUS_MREQ) {
-      bb->out_state[1] = mem[addr];
-    } else if (status & Z80_STATUS_IORQ) {
-      bb->out_state[1] = 0;
-    }
+  if (!(status & STATUS_WR)) {
+    bb->out_state[1] = mem[addr];
 
     bb->trimask |= 2;
   } else {
     bb->trimask &= ~2;
     busyboard_out(bb);
-    if (status & Z80_STATUS_WR) {
+    if (status & STATUS_WR) {
       busyboard_in(bb);
       unsigned val = bb->in_state[1];
-      if (status & Z80_STATUS_MREQ) {
-	mem[addr] = val;
-      } else if (status & Z80_STATUS_IORQ) {
-	printf("I/O write, port %02x, val %02x\n", addr&0xff, mem[addr]);
-      }
+      mem[addr] = val;
     }
   }
 
@@ -163,14 +151,19 @@ void z80_emulate_cyc(busyboard_t *bb) {
 int main(int argc, char **argv) {
   int i;
   busyboard_t bb;
-  load_hex("hello.hex");
-  init_busyboard(&bb, (argc >= 2) ? argv[1] : "/dev/parport0");
-  z80_init(&bb);
+  load_hex(0x800, "sieve.hex");
 
-  for (i = 0; i < 100000; ++i) {
-    set_clk(&bb);
-    z80_emulate_cyc(&bb);
-    clear_clk(&bb);
+  // Set initial PC
+  mem[0xfffc] = 0x00;
+  mem[0xfffd] = 0x08;
+  init_busyboard(&bb, (argc >= 2) ? argv[1] : "/dev/parport0");
+  cpu_init(&bb);
+
+  for (i = 0; i < 20000; ++i) {
+    if (i & 1) set_clk(&bb);
+    else clear_clk(&bb);
+
+    cpu_emulate_cyc(&bb);
     print_bus_status(&bb);
   }
 

@@ -30,17 +30,17 @@ Nixing KiCad
 I was very excited to start laying out my PCB in KiCad, a widely-used open
 source EDA platform and PCB editor. Since I was already had netlists in a
 reasonable format, I assumed it would be no problem to use along with KiCad's
-LVS (layout-versus-schematic) capability. After all, the electronics industry
+LVS (layout-versus-schematic) capability. After all, the industrial automation
 is notorious for terse, easily-parsable and easily-generable file formats. What
-I found instead was a workflow so set in stone that it seemed the idea of using
+I found instead was a workflow so set-in-stone that it seemed the idea of using
 an external source of netlists had never even occurred to the original
 developers.
 
 As is clear from CHDL itself, what I do in these situations is create another,
 lighter-weight tool that fits well with the workflows of open source hardware
-projects. Call it NIH<link: not invented here> if you will; I call it DIY
-<link: do it yourself ethic>. And what is open source hardware without the DIY
-ethic?
+projects. Call it NIH<link: https://en.wikipedia.org/wiki/Not_invented_here> if
+you would like; I call it DIY <link:https://en.wikipedia.org/wiki/DIY_ethic>.
+And what is open source hardware without the DIY ethic?
 
 Introducing libpcb
 ------------------
@@ -59,8 +59,8 @@ Paper Test
 
 Since all of the device footprints were entered manually from technical
 drawings, having the components fit was a concern. To alleviate my worries, I
-did a simple check against a full scale printout of the board, inserting the
-component pins through the paper to check for any dimension issues.
+did a simple check against a full scale printout of the board, lining up the
+component pins on the paper to check for any dimension issues.
 
 Visual Inspection
 -----------------

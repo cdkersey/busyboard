@@ -65,3 +65,14 @@ component pins on the paper to check for any dimension issues.
 Visual Inspection
 -----------------
 
+Initial Test: LEDs and Persistence of Vision
+--------------------------------------------
+
+Talking SPI: SRAM and ADCs
+--------------------------
+
+Emulating a Memory System
+-------------------------
+
+The Code
+--------

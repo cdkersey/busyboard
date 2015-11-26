@@ -5,7 +5,12 @@ It may come as no surprise to anybody who has used any of the CHDL-related
 projects, but I don't like to use schematics. My notebooks are full of little
 pieces of them, sure, but when it comes to actually representing designs in
 human-and-machine-readable fashion, I find schematics to be intrinsically
-inferior to easily-customizable textual representations.
+inferior to easily-customizable textual representations. Ultimately this comes
+down to the difficulty of representing customizable designs with many
+parameters as schematics. What I present here is such a design and its
+physical implementation. The tools are still early in their life cycles, but
+they have already proven to be useful at least in the limited sense that they
+have produced the first iteration of an adequate educational/hobbyist product.
 
 The Project
 -----------
@@ -74,5 +79,11 @@ Talking SPI: SRAM and ADCs
 Emulating a Memory System
 -------------------------
 
+Programming an EEPROM
+---------------------
+
 The Code
 --------
+
+This is, of course all available on GitHub, both LibPCB and the Busyboard
+source itself.

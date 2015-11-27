@@ -1,10 +1,10 @@
 module<tstrip> 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54
-module<usb_b> 1 2 3 4 gnd gnd
-module<led> 1 2
+module<usb_b> 1 2 3 4
+module<led> 2 1
 module<r10ohm> 1 2
 module<r1600ohm> 1 2
-module<c1uF> 1 2
-module<c100nF> 1 2
+module<c1uF> 2 1
+module<c100nF> 2 1
 module<74hc4094> 3 1 2 7 8 9 10 gnd 5 6 14 13 12 11 4 vdd
 module<74hc597> 3 4 5 6 7 8 9 gnd 14 13 11 10 12 1 2 vdd
-module<centronics_parallel> 6 7 8 9 10 11 12 13 14 1 2 3 4 15 nc gnd gnd nc gnd gnd gnd gnd gnd gnd gnd gnd gnd gnd gnd gnd 16 5 gnd nc nc 17 gnd gnd
+module<centronics_parallel> 6 7 8 9 10 11 12 13 14 1 2 3 4 15 nc gnd gnd nc gnd gnd gnd gnd gnd gnd gnd gnd gnd gnd gnd gnd 16 5 gnd nc nc 17

@@ -5,9 +5,9 @@
 
 /* Busyboard control program/library */
 
-/* Busyboard control structure. */
 #define BUSYBOARD_N_PORTS 6
 
+/* Busyboard control structure. */
 struct busyboard {
   int fd; /* Parallel port file descriptor. */
   unsigned trimask; /* One bit per I/O byte tristate mask, 1=out 0=Hi-Z */

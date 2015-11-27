@@ -1,89 +1,147 @@
-Using CHDL as a PCB-level HDL
------------------------------
+The Busyboard: My New Favorite Toy
+==================================
 
-It may come as no surprise to anybody who has used any of the CHDL-related
-projects, but I don't like to use schematics. My notebooks are full of little
-pieces of them, sure, but when it comes to actually representing designs in
-human-and-machine-readable fashion, I find schematics to be intrinsically
-inferior to easily-customizable textual representations. Ultimately this comes
-down to the difficulty of representing customizable designs with many
-parameters as schematics. What I present here is such a design and its
-physical implementation. The tools are still early in their life cycles, but
-they have already proven to be useful at least in the limited sense that they
-have produced the first iteration of an adequate educational/hobbyist product.
+When I was perhaps ten years old my dad pointed out to me a dingy little white
+box laying out on a tarp among various other pieces of junk at a flea market.
+For five dollars, I got my very own <Pencilbox LD-1 Logic Designer>, a member of
+a class of artifacts with which I was already somewhat familiar. A solderless
+breadboard is fastened down to a panel surrounded by various electronic
+miscellany, including prehaps most importantly an integrated power supply.
+I'd been putting quite a few hours at the kitchen table on my father's
+<Heathkit ET-3100>, an analog-oriented device of the same class, but my
+interests were more digital.
 
-The Project
------------
+The Pencilbox, even moreso than the Heathkit, was perfect for a certain class
+of play and study:
+  - A sample component is installed into the breadboard. Its interface is
+    understood by the experimenter, but she has no first-hand experience
+    employing it in a design.
+  - Its power pins are connected to the supply rails; its signal pins are
+    connected to the various I/O options, perhaps tri-state capable DIP
+    switches, LEDs, and debounced pushbutton switches, available.
+  - Power is applied and the experimenter simply plays with the device's pins,
+    asserting various inputs and observing the outputs.
+The principal advantage I see in this is that, at a very low cost, the
+experimenter gains confidence in her understanding of the component before
+using it in a design. There is also some use of these for prototyping small
+designs consisting of multiple components, but the procedure is the same. The
+components are assembled, switches are flipped, and the design is interactively
+explored to the satisfaction of the experimenter.
 
-This project has its genesis in an EEPROM programmer design I wirewrapped up
-around 2004 or so, using three 74LS191 up/down counters to control the address
-lines of a 28c64 EEPROM attached to the parallel port. The design was very
-simple, only programming and verifying a single type of EEPROM. I decided that
-if I ever built this kind of device again, I would use shift registers instead
-of counters, to allow more functions and wider support for EEPROMS and other
-memory devices. Now, over a decade later, that I have finally committed to
-building this kind of device, I have decided to make it as universal as
-possible, supporting not only the programming and reading of various ROM
-devices, but also general use as a GPIO interface, with a large number of
-signals and a prototyping area. This finally morphed into the design I
-ultimately built, which I call the Busyboard, a PC-connected digital
-Swiss Army knife.
+Recapturing the Spirit
+----------------------
 
-Nixing KiCad
-------------
+This was both a severely limited and intrinsically enjoyable way to approach
+learning about, or more often simply playing with electronics. I recently found
+myself in need of an EEPROM programmer and a demonstration vehicle for <libpcb>
+and thought it would be as good a time as any to attempt to update the concept
+for my present needs, and this meant replacing the switches and buttons with
+digital I/O attached to a host computer.
 
-I was very excited to start laying out my PCB in KiCad, a widely-used open
-source EDA platform and PCB editor. Since I was already had netlists in a
-reasonable format, I assumed it would be no problem to use along with KiCad's
-LVS (layout-versus-schematic) capability. After all, the industrial automation
-is notorious for terse, easily-parsable and easily-generable file formats. What
-I found instead was a workflow so set-in-stone that it seemed the idea of using
-an external source of netlists had never even occurred to the original
-developers.
+I decided it was better to sacrifice speed for the number of I/O pins
+available by using a series of shift registers for both input and output. A
+final shift register was added to the output chain to provide output enable
+signals, allowing individual 8-bit ports to be placed in input or output mode.
+The final design had six such ports, limited by the 54-pin breadboard-style
+terminal strip that was available.
 
-As is clear from CHDL itself, what I do in these situations is create another,
-lighter-weight tool that fits well with the workflows of open source hardware
-projects. Call it NIH<link: https://en.wikipedia.org/wiki/Not_invented_here> if
-you would like; I call it DIY <link:https://en.wikipedia.org/wiki/DIY_ethic>.
-And what is open source hardware without the DIY ethic?
-
-Introducing libpcb
+Building the Board
 ------------------
 
-Building the Netlist in CHDL
-----------------------------
+I initially coded up the board design using CHDL for the digital components
+and connectors and a separate handwritten netlist for the bypass capacitors and
+LEDs. This used the CHDL submodule feature to produce a netlist containing all
+of the devices as submodules. This was post-processed to produce a netlist in
+a more standard one-net-per-line "pin instance pin instance..." format. This
+worked as a proof of concept, but future board-level designs in CHDL will
+include some sort of additional state to include the passives in the CHDL code
+as well as perform the netlist generation (and simulation) within the same
+binary. This design was considered so simple that no simulation was performed.
 
-Routing the PCB Manually with libpcb
-------------------------------------
+If there are future revisions of the busyboard, some of this simplicity will be
+discarded for functionality. A microcontroller, almost certainly itself
+programmed using the current generation busyboard, will be added to provide some
+basic initialization and a better communication protocol. The current board
+design, in a wonderful display of anachronism for the sake of simplicity,
+contains both a USB connector for power and a 36-pin Centronics parallel port
+for data.
 
-With the library taken care of, now it was time to actually place and route the
-design by hand.
+With a netlist I was reasonably confident in, it was time to lay out the PCB. By
+this time my Digkey order had arrived, so I could actually physically measure
+the components to ensure that my footprints were reasonable. At least once I
+verified the zoom level with a piece of Letter paper then physically pressed the
+Centronics-36 connector I had purchased against the screen to check the
+locations of the pins and screw holes.
 
-Paper Test
-----------
+Placement and routing was performed manually, using <gerbv> for periodic visual
+checks. This led to source code that looked largely like the following (units
+in inches):
 
-Since all of the device footprints were entered manually from technical
-drawings, having the components fit was a concern. To alleviate my worries, I
-did a simple check against a full scale printout of the board, lining up the
-component pins on the paper to check for any dimension issues.
+  // Carry to U7                                                                
+  (new track(0, 0.01))->
+    add_point(5.7,0.3).add_point(6.225,0.3).
+    add_point(6.35,0.175).add_point(6.6,0.175);
+  (new via(point(6.6,0.175),0.06,0.035));
+  (new track(1,0.01))->
+    add_point(6.6,0.175).add_point(6.6,0.5);
 
-Visual Inspection
+What makes this tolerable compared to writing straight <Gerber> files is the
+ability to add higher-level constructs like device footprints and text. What
+makes this tolerable compared to visual editors like KiCAD is the same set of
+things that make HDLs appealing when compared to schematic capture. The
+busyboard design looks like page after page of meaningless numbers, but the
+framework allows for generators, so classes of designs can be written instead of
+point solutions, and managed, tested, and developed as source code, with all of
+the advantages in productivity that come along with that.
+
+Perhaps, it'll only be when automatic routing and generation of advanced
+structures like distributed element filters and differential interconnects show
+up that libpcb will be a truly attractive alternative, but those types of
+features will have to wait for future projects.
+
+The Host Software
 -----------------
 
-Initial Test: LEDs and Persistence of Vision
---------------------------------------------
+The semantics of the busyboard are very simple (read, write, set input/output)
+and so is the API, written in C and based entirely around a single structure:
 
-Talking SPI: SRAM and ADCs
---------------------------
+  /* Busyboard control structure. */
+  struct busyboard {
+    int fd; /* Parallel port file descriptor. */
+    unsigned trimask; /* One bit per I/O byte tristate mask, 1=out 0=Hi-Z */
+    unsigned char out_state[BUSYBOARD_N_PORTS],
+                  in_state[BUSYBOARD_N_PORTS];
+  };
 
-Emulating a Memory System
--------------------------
+All interaction with the board is by manipulating trimask, out_state, and
+in_state. This allows for future revisions of the board to change the interface
+used between the host machine and board without the need to change host-side
+source code. The state of this structure is read from and written to the board
+with busyboard_in(struct busyboard *bb) and busyboard_out(struct busyboard *bb)
+respectively. These, and an init_busyboard() and close_busyboard() function, are
+the whole of the API.
 
-Programming an EEPROM
----------------------
+The initial test was a persistence-of-vision based raster display, spelling out
+CHDL on 8 LEDs to quickly moving eyes (or camera). This was quickly followed by
+interfacing with a simple 128kB SPI SRAM in an 8-pin DIP package, and of course
+a 32kB EEPROM, the reason this was built
 
-The Code
---------
+I won't spare too many words detailing all of the other devices that have been
+interfaced with the busyboard, but these include:
 
-This is, of course all available on GitHub, both LibPCB and the Busyboard
-source itself.
+  * A 65c02 CPU, with memory contents stored on the host machine.
+  * A 512kB parallel SRAM; the largest currently available in a DIP package.
+  * A 2x16 character module.
+  * An SPI analog-to-digital converter.
+
+Build Your Own!
+---------------
+
+Want to hack together your own busyboard? I still have some spare PCBs; just
+shoot me an email. I'll give you the unpopulated board if you promise to share
+what you do with it. If you'd like to play with or improve this rather simple
+design, the entire source (including this article) is available on GitHub:
+
+<https://github.com/cdkersey/chdl> - CHDL; needed for the netlist generator.
+<https://github.com/cdkersey/libpcb> - libpcb, used by board layout generator.
+<https://github.com/cdkersey/busyboard> - Busyboard source, including netlist and board layout generator.
